@@ -1,0 +1,297 @@
+Docker is a platform that allows developers to build, ship, and run applications within lightweight, portable containers
+
+
+docker command:
+1.run : docker run nginx 
+        this command is used to run the container from an image if the image is not found then it will pull the image from docker hub. It is happens only first time.
+2.ps : docker ps 
+	this command give list of all running containers
+	like container id, image, name 
+	Each container get random id and container name
+	
+3. ps -a : docker ps -a
+	 gives list of all container which are running and previously stopped container or exited containers	
+
+4. stop : docker stop container id or name
+  	  on success the name will printout
+
+5. rm : remove the stopped and exited container	permanently if it gives the name back the success
+
+6. image : to see list of available images and size which were pulled ex: image, repository and size.
+
+7. rmi : to remove the image which we don't for use insure no container running of this image or exited or stopped. We need to stop and delete the dependent containers.
+
+8. pull : it pull the image not run the container.
+
+run command run the container but exit it immediately. Because the container are not mean to host an operating system. Container meant to run a specific task Ex: host instance  server of an application or database, to carry simple computation or analysis task. If the web service inside container is stopped or crash then container is exit. Container only lives only process inside it lives
+if container is stopped or crash then container exit
+
+9. sleep process: docker run ubuntu sleep 5 (executing command on run container)
+		 sleep command duration of 5 seconds when the container starts it runs the sleep command and goes to sleep for 5 sec
+		 
+10. exec : execute command on docker container
+	   let we want to see the content of file inside this particular running container
+
+11. docker run container : run the docker command in foreground means in the attached mode, meaning we will attached to the console or standard out of the docker container.
+          We don't  able to do anything on the console other than view the output until the docker container stops.
+12. docker run -d container : -d (detached mode) this will run the container on the background, and we will be back to prompt immediately.
+
+13. attach : If I would like to reattach to the running container later (we can give few character of id in any docker command)
+
+14. docker run --name meaningfull_name -d <container-name> : This command change the name of the container at the time of creating the container.
+
+15. docker run redis:version : to run the specific version and after the "redis:version" is a tag. If we don't specify any tag then docker will consider the default version
+                              is latest.
+
+16. How we can find what is the latest version so we need to go to the docker-hub there you find the support tag of all versions in its description.
+
+17. Run Stdin : By default the container does not listen to standard input. It does not have an terminal to listen input, it runs in a non interactive mode.
+		If i want to provide input to my container then i must map the standard input to your host to the docker container using "-i"
+		example: Docker run -i kodekl. The -i parameter is for interactive mode. To connect to the containers terminal we need to use "t" also after the -i.
+		The "-t" means pseudo terminal.
+		Ex docker run -it kodekl
+		
+18. PORT mapping (-p): publishing on container
+	   The underlying host where is my docker is installed is called docker host or docker engine. 
+	   When we run an containerized web application it runs and are able to see that the server is running. But how does the user access my application. Let my application is
+	   running on port 5000. We have two options one I use the ip of docker container. Every docker container gets an ip ex:172.17.0.2 assign by default. It is an internal ip and
+	   is only accessible within the docker host. So if we open the browser within a docker host, we can go to HTTP ex http://172.17.0.2:5000. For user outside the docker-host 
+	   they can't access it for this we can use the ip address of the docker-host ex: 192.168.1.5 for that to work we must have mapped the port inside the docker container to
+	   a free port on the docker host.
+	   For example : if someone wants to access my application through the port 80 on my docker host then I could map port 80 of local host to port 5000 on the docker container
+	   using -p. ex docker run -p 80:5000 kodekl then use http://172.17.0.2.5000. This way we can run multiple instances of my application and mapped them with different port on 
+	   host. Port which is already is in used of docker host can't be assign.
+	   Ex: docker run -p 80:5000 kodekel
+
+19. Run-volume mapping (-v): How data is persisted in docker container
+           let we were running mysql container. When the databases and tables are created the data files are stored in the location ex var/lib/mysql inside the docker container. The
+           docker container has its own isolated file system and any changes to any files happen within the container. Let assume we dumped lots of data into the database what 
+           happened when delete the mysql container and remove it. As soon as we do that, the container along with all the data inside it gets blown away means all data is gone.
+           If i would like to persist this data we would map a directory outside the container on the docker host to a directory inside the container. 
+           Ex we create a directory called /obt./datadir mapped that to /var/lib/mysql inside the docker container using "-v" option
+           docker run -v /opt/datadir:/var/lib/mysql mysql the data will remain in the external even we delete the docker container
+           
+20: Inspect Container (get basic information using ps command): Get the basic information like names and id but if i want to see additional details about the specific container use 
+							        docker inspect container_name and it provides the container name and id in json format.
+							        
+21: Container Log : How can we see container logs which are running in the background:
+		    Ex docker logs container_name
+		    
+22. Environment variables: let say we have web application there is a code where we mention the color. So we need to move such information outside the application code and into 
+			   say environment variable ex os.environ.get('APP_COLOR').
+			   ex: export APP_COLOR =blue; python app.py.
+			   If i want to pass environment variable we can use Ex: docker run -e APP_COLOR=blue container_name.
+		           How can we find environment variable of already running container we can use inspect command and in config section we can find list of environment 
+		           variables.
+
+How to create own image
+	Create a file name called Dockerfile write down the instruction to setting up the application such as installing dependencies, where to copy the source code from and to and 
+	what the entry point for the application. Then create a image using docker build command and specify the docker file as input as well as a tag name for the image
+	Ex: docker build Dockerfile -t rohan/my-custom-app. To make available in public docker-hub registry , run the docker push command and specify the name of your image
+	Ex: docker push rohan/my-custom-app.
+
+Dockerfile : Docker file is text file .It is written in a specific format the docker can understand. It is in a instruction and argument format.		
+	     Ex:on the left side in cap is an instruction and everthing on the right are argument to those instruction
+	     1. start from a base os or another image: FROM ubuntu  what should be the base os form the container. Every docker images based off of another docker image, either of os
+	     2. run instruction instruct docker to run a particular command on those images
+		RUN apt-get update : It is use to fetch the updated packages and install required dependencies on the image. 
+	     3. The COPY instruction copies files from the local system onto docker image
+	     	Ex : COPY . /opt/source-code
+	     4. ENTRYPOINT allows us to specify a command that will run when that will be run when the image is run as a container.
+	     	Ex: ENTRYPOINT FLASK_APP=/opt/source-code/app.py flask run.
+	     	Each line of instruction creates a new layer in the docker image with just the changes from the previous layer
+	     	If the process is stop during build and when we will build again then previous layer will be store in cache and it will be reuse the previous layer from the cache
+	     	and continue to build the remaining layers.
+	     	Ex : docker buildx build /home/berserker/Downloads/docker/ -t firstapp . . And both the Dockerfile and files which need to import must be in the same folder.
+		
+		Docker layers Ex: Layer 1 : Base Ubuntu layer
+				  Layer 2 : Changes in apt packages
+				  Layer 3 : Changes in pip packages
+				  Layer 4 : Source code
+				  Layer 5 : Update Entrypoint with "flask" command
+	
+	We can containerized everything
+
+Docker (CMD VS ENTRYPOINT) : 
+	CMD means command which defines the program that will be run within a container.
+	During the creation of the image we can add command which will be run after the container create.
+	We can specify command by 2 ways.
+	In a shell form Ex: CMD command Param1 , CMD sleep 5
+	In a JSON Format EX: CMD ["command", Param1] , CMD ["sleep" ,5] in this format first element of the array should be executable.
+	Let I already added a CMD sleep 5 in the image but we want to change the param so just append the command during running as sleep already mentioned so I can added
+	Docker run ubuntu sleeper 10 but it is not look good so ENTRYPOINT comes in it
+	ENTRYPOINT ["sleep"] if we can write Docker run ubuntu 10. Whatever we added on the end 10 , 10 will be appended to the entry point.
+	
+	In Case of CMD instruction, the command line parameters passed will get replaced entirely.
+	But In case of ENTRYPOINT the command line parameters will be appended.
+	Let we did not specified the parameter at the time of docker run command then it will give you an error so for the default value we used both command. In this case we need to
+	specify both instruction in JSON Format.
+	Ex: FROM ubuntu
+	    ENTRYPOINT ["sleep"]
+	    CMD ["5"]
+	   
+	Let we want to change the enrtypoint so Use this docker run --entrypoint sleep2.0 ubuntu 10 in this case we are overwrite the entrypoint in the docker run command.
+	
+ docker exec -it heuristic_haibt  sh : to go inside the container terminal
+ 
+ docker rm -f $(docker ps -a -q) : remove all container ps -a , -f Stands for force.
+                                   Normally, Docker won’t remove running containers — it throws an error.
+			           The -f (force) flag tells Docker to stop the container first (like docker stop) and then remove it.
+
+It’s basically a shortcut for:
+  docker stop $(docker ps -q) : create a list of running container id : 
+  				 -q This is short for quiet mode.
+                                    Instead of a table, docker ps -q gives just the container IDs, one per line.
+                                    Useful for scripting, like in this case.
+                                    c3d5b8a2b9ae
+				    e1a3bc7f4d99
+				    9f3e7b8120ac
+				  $(...) This is command substitution in Bash (and most Unix shells).
+                                  It runs the command inside $(...), captures its output, and substitutes it right into the outer command.
+			      Ex: docker stop c3d5b8a2b9ae e1a3bc7f4d99 9f3e7b8120ac
+			      
+
+Networking :  When we install docker, it will create 3 network automatically. 
+	      Bridge , none  , host
+	      Bridge is the default network a container gets attach to
+	      If we want to associate any other network to the container
+	      Ex: docker run Ubuntu --network=non
+	       	  docker run Ubuntu --network=host
+	       	  
+	     1. Bridge : Private internal network created by docker on the host. All container attach to this network by default and they get the internal ip Address usually in the 
+	     		 range 172.17 series. The containers can access each other using this internal ip if required. To access any of these container outside the world, maps the 
+	     		 port of these containers to the port on the docker host. 
+	     
+	     2. host :   Another way to access the containers externally is to associate the container to the host network. This takes out any network isolation between the docker
+	     		 host and the docker container. Meaning if you were run a web server on 5000. In a web app container, it is automatically as accessible on the same port 
+	     		 externally without requiring any port mapping as the container uses the host network. so we are now not able to run multiple web containers on the same host
+	     		 on the same port, as the ports are now common to all containers in the host network.
+	     		 
+	     3. None : In this network, containers are not attached to any network and does not have any access to the external network, or other containers. They run in a isolated
+	     	       network. 
+	     	       
+	     4. User-defined network : docker network create \
+	     			       --driver bridge \
+	     			       --subnet 182.18.0.0/16
+	     			       custom-isolated-network
+	     			       
+	     			      Ex : find the networks : docker network ls
+	     			      Ex : Connect network with container : docker network connect n1 jovial_shamir
+	     			           				    or docker run -dit --name c1 --network n1 alpine sh
+	     			           				    
+		Container can't access using ip address of containers because it it not guarantee they will get same ip address when system is reboot. Container can reach each-other 
+                using their names. Docker has a built in DNS server (containes container name and their ip address)that helps the containers to resolve each other using the container 		
+                names.
+		Built-in DNS server always runs at address 127.0.0.11.
+		
+		In Linux, a network namespace is a mechanism that creates isolated network environments within a single operating system.
+		How container isolated within the host? 
+		Docker uses network namespaces that create separate namespace for each container. It then uses virtual Ethernet pairs to connect containers together. 
+		
+Docker storage driver and file system:
+		How docker store data in local file system?
+		When the docker install in the system it create '/var/lib/docker'. We have multiple folder under docker ex aufs, containers, image, volume. This is where docker 
+		store all its data by default. Data means files relate to images and containers.
+		
+		Layer Architecture :
+		Image layers which is readable only and once the image build we cannot change content of these layers : 
+								     Layer 1 : Base Ubuntu layer
+							             Layer 2 : Changes in apt packages
+							             Layer 3 : Changes in pip packages
+							             Layer 4 : Source code
+							             Layer 5 : Update Entrypoint with "flask" command
+		Container layer (read write): Layer 6 : Container layer
+		Docker volume create data_volume : It will create volumes/data_volume in the docker host
+		docker run -v data_volume:/usr/share/nginx/html first-app
+		So even if the container destroys the data is still active. Even if I did not created volume then still we use "docker run -v data_volume:/usr/share/nginx/html
+		first-app" it will create volume. This process is volume mounting . The external mounting is called bind mounting.
+		Volume mount mount the volume from volume directory and 
+		docker run --mount type=bind, source=/..., target=/... container_name
+		target :container location
+		Docker uses storage drives ex : AUFS, ZFS, BTRFS, Device Mapper, Overlay, Overlay2 to enable layer architecture. Docker will choose best storage drives 
+		automatically based on OS. Different storage drivers provide different stability and performance characteristics
+		
+
+docker system prune -a : to remove all unused images.
+docker system prune -a -v : to remove all unused images and volumes.
+docker volume prune -a : to remove all unused volumes.
+docker network prune -a : to remove all unused networks.
+docker system ls : to check the all folder in the docker host.
+
+docker network rm network_name : It removes the network.
+
+docker rename my_container newName_container : Rename container
+
+Docker compose : If we need to run complex application running multiple services, a better way to do this Docker compose. With docker compose we could create a configuration file in
+		 yamo format called "docker-compose.yml" and put together different services and the option specific to this to running them in this file.
+		 Then we can use "docker-compose up" to bring up the entire application stack is easier to implement ,run and maintain as all changes are always stored in the
+		 docker-compose configuration file. This is all only applicable to running container on a single host.
+		 Ex Let we have a complex web application created using python, redis, .net, postgres, node.js.
+		    How we can put this together application stack on a single docker host/engine using docker run commands and then docker compose.
+		    
+		    docker run -d --name=redis redis
+		    docker run -d --name=db postgres 
+		    docker run -d --name=vote -p 5000:80 --link redis:redis voting-app
+		    docker run -d --name=result -p 5001:80 --link db:db result-app
+		    docker run -d --name=worker --link db:db --link redis:redis worker 
+		    
+		    so docker-compose.yml for version 1. It is based on default bridge network
+		    	redis:
+		    	     image: redis
+			db:
+			     image: postgres
+			vote:
+			    image: voting-app or build ./vote (name of the directory which contains the application code and a docker file with instruction to build the docker image)
+			     ports:
+			     	-5000:80
+			     links:
+			     	-redis
+			result:
+			     image: result-app
+			     ports:
+			     	-5001:80
+		             links:
+		             	-db
+		             	
+			worker:
+			     image: worker
+			     links:
+			     	-redis
+			     	-db
+		 use 
+		 	docker-compose up
+		
+		 version: 2
+		 services:
+		 	...
+		 	networks: frontend
+		 		  backend
+		 networks:
+		    
+Link 2 containers together : Link is command line option which we can use to link 2 container. To make the voting app to use the redis service we need to link them 
+			     docker run -d --name=vote --link container_name:name_of_the_host (alias) which voting app is looking for
+ 			     docker run -d --name=vote --link db:db 
+			     (db:db = db)
+			     
+Different version of docker compose file : How does docker knows what version of the file we are using?
+					   We need to add "version: 2" for the version 2 on the top of the docker-compose.yml file
+					   and another difference with networking for version 2 Docker compose automatically create dedicated bridge network for this application
+					   and then attaches all the containers to that new network. So all the containers are then able to communicate to each other using each 
+					   other's services name. So basically we don't need to use links in version 2 of docker compose. 
+					   Version 2 introduces depends on feature. If we want to specify startup order. 
+					   "depends_on:
+					   		-redis"
+					   Version 3: comes with docker swarm support
+					   
+docker system prune -a : is used to clean up unused Docker resources, including images, containers, volumes, and networks — and it can free up a lot of disk space.
+
+docker tag imageName repo-name/myflix:latest : imageName → The local image name you built (from docker build)
+					       repo-name/myflix → Repository name on Docker Hub or your private registry
+					       If Docker Hub, repo-name is usually your Docker Hub username
+					       :latest → The tag of the image (optional, default is latest)
+	
+docker push repo-name/myflix:latest : Pushes the tagged image to your registry.
+				      If repo-name is a Docker Hub username, this will push to Docker Hub
+				      If repo-name includes a URL (like ghcr.io/user/myflix), it pushes to a private registry
+					   
+

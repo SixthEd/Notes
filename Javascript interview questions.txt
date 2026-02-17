@@ -1,0 +1,872 @@
+Javascript interview questions
+
+1 Weak map and map
+	In Weak map, key are object and function
+	In map, key can be string, boolean and number
+
+2 Set
+ 	A JavaScript Set is a collection of unique values
+
+3. what is the use of "new" keyword
+	use to create a instance 
+	
+4. Sementic tags?
+ Clearly defines its content. Ex: <p>
+ 
+5. full form of css? cascading style sheet
+ 
+******************************************************
+Difference between map and objects
+
+Object:
+	Keys must be strings or Symbols. If any other data type is used as a key, it is implicitly converted to a string.
+Map:
+	Keys can be of any data type, including objects, functions, or primitive values like numbers or booleans. This allows for more flexible and powerful key-value associations.
+
+2. Order of Insertion:
+Object:
+	The order of properties in an Object is not guaranteed to be preserved, especially in older JavaScript versions. While modern engines often maintain insertion order for 	
+	string keys, it's not a strict guarantee for all scenarios.
+Map:
+	Map objects strictly maintain the order of key-value pairs based on their insertion order, making them iterable in a predictable sequence.
+
+3. Iteration:
+Object:
+	Iterating over an Object typically requires using for...in loops or methods like Object.keys(), Object.values(), or Object.entries().
+Map:
+	Map objects are directly iterable and provide built-in iteration methods like forEach(), for...of loops, and entries(), keys(), and values() methods for easier traversal.
+
+4. Size Property:
+Object:
+	Objects do not have a direct size property to get the number of key-value pairs. You would typically need to use Object.keys().length.
+Map:
+	Map objects have a size property that directly returns the number of elements in the map.
+
+5. Performance:
+Object:
+	For simple, fixed sets of string-based keys, Objects can be slightly faster for property access due to their underlying hash table implementation.
+Map:
+	Maps are generally optimized for frequent additions, deletions, and iterations, especially when dealing with a large number of entries or non-string keys.
+
+6. Prototype Chain:
+Object:
+	Objects inherit properties from their prototype chain, which can lead to potential key collisions or unexpected behavior if not handled carefully (e.g., checking 	
+	hasOwnProperty).
+Map:
+	Maps do not have a prototype chain to worry about, making them safer and simpler to use for key-value storage without fear of inherited properties.
+
+In summary: Use Object for simple, fixed collections of data where keys are primarily strings or symbols and order is not critical. Use Map when you need flexible key types, guaranteed insertion order, built-in iteration methods, or when dealing with dynamic and potentially large collections of key-value pairs.
+
+
+Edge cases:
+
+1. Type Coercion Edge Cases
+	JavaScript often automatically converts values from one type to another. This is called type coercion, and it can produce unexpected results.
+	
+	Ex : == vs ===
+		0 == false;    // true
+	     	0 === false;   // false
+
+	Explanation:
+		== performs type coercion, converting both sides to a common type.
+		=== checks for both value and type equality — no coercion.
+		
+	Ex : null vs undefined
+		null == undefined; // true
+		null === undefined; // false
+		
+	Explanation:
+		null and undefined are treated as loosely equal.
+		But they are different types, so strict equality fails.
+		
+	Example 3: Adding strings and numbers
+		"5" + 5; // "55"
+		"5" - 5; // 0
+		
+	Explanation:
+		The + operator with a string coerces the other operand to a string.
+		The - operator coerces both operands to numbers.
+	
+	Example 4: Boolean coercion
+		!!"";  // false
+		!!"0"; // true
+		!![];  // true
+		
+	Explanation:
+		Empty string "" is falsy.
+		Non-empty string "0" is truthy.
+		Empty array [] is truthy.
+	
+2. Comparison Edge Cases
+
+	Example 1: Object comparisons
+		{} == {}; // false
+		[] == []; // false
+			
+	Explanation:
+		Each object or array is stored by reference. Even if they look the same, they are different objects in memory.
+	
+	Example 2: Comparing array with number
+		[] == 0;    // true
+		[1] == 1;   // true
+		
+	Explanation:
+		The array is coerced to a string: [].toString() → "", then to a number → 0.
+		[1].toString() → "1" → 1.
+	
+	Example 3: Lexicographical comparison
+		"2" > "12"; // true
+		
+	Explanation:
+		Strings are compared character by character, not numerically.
+		
+3. Truthy and Falsy Values
+	
+	Falsy value:
+		false, 0, -0, 0n, "", null, undefined, NaN
+
+	Everything else is considered truthy.
+		if ([]){
+		    console.log("Truthy!");
+		}
+		// Output: Truthy!
+		
+6. Closure Edge Cases
+	
+	Example:
+		for (var i = 0; i < 3; i++) {
+		    setTimeout(() => console.log(i), 1000);
+		}
+		// Output: 3, 3, 3
+		
+	Explanation:
+		var is function-scoped, so all closures share the same reference to i.
+	
+	Solution:
+		for (let i = 0; i < 3; i++) {
+    			setTimeout(() => console.log(i), 1000);
+		}
+		// Output: 0, 1, 2
+		
+7. Asynchronous Edge Cases
+	Example:
+		console.log('Start');
+		setTimeout(() => console.log('Timeout'), 0);
+		Promise.resolve().then(() => console.log('Promise'));
+		console.log('End');
+	
+	Output:
+		Start → End → Promise → Timeout
+
+	Explanation:
+		Synchronous code runs first.
+		Microtasks (Promise callbacks) run before macrotasks (setTimeout).
+		
+8. Floating Point Arithmetic Edge Case
+	Example: 
+		0.1 + 0.2 === 0.3; // false
+	Explanation:
+		Floating-point precision errors cause unexpected results.
+		
+9. Array Edge Cases
+	Example 1: Sparse arrays
+		const arr = [1,,3];
+		console.log(arr.length); // 3
+		console.log(arr[1]); // undefined
+		
+	Example 2: Modifying length
+		let arr = [1, 2, 3, 4];
+		arr.length = 2;
+		console.log(arr); // [1, 2]
+		
+10. JSON Edge Cases
+	Example:
+		JSON.stringify({ a: undefined, b: function() {} }); // "{}"
+	
+	Explanation:
+		Functions and undefined are skipped in JSON serialization.
+	
+11. Object Edge Cases
+	Example: Duplicate keys
+		const obj = { a: 1, a: 2 };
+		console.log(obj.a); // 2
+	
+13. Exception Handling Edge Cases
+	Example: Catch block scope
+		try {
+    			throw new Error("Oops");
+		} catch (e) {
+    		let x = 10;
+	}
+	console.log(x); // ReferenceError
+
+
+	Explanation:
+		Variables declared inside catch are block-scoped.
+		
+✅ 14. Serialization & Circular References
+	const obj = {};
+	obj.self = obj;
+	JSON.stringify(obj); // TypeError: Converting circular structure to JSON
+	
+	
+//JS Basics
+
+1. Types of variables
+    var : Global(function scoped) , redeclared, can be updated
+    let : Block scoped, cannot be redeclared , can be updated
+    const : Block scoped, cannot be redeclared, can not be updated
+    
+    Immutable : unable to change with time
+    
+2. typeOf(null) //object 
+
+3. null primitive data type meaning we assigned a value which is empty or point to no object 
+   undefined primitive data type meaning we declared a variable but not assigned a value
+   
+4. Optional chaining ?.
+   Ex: const nestedProp = obj.first && obj.first.second;
+       obj.first?.second
+       
+5. CallBack functions
+   function which is passed to another function as a argument
+   
+6. this keyword
+
+	🔥 this KEYWORD — ALL POSSIBLE CASES
+	1️⃣ Global Context
+		✔ Non-Strict Mode
+		console.log(this);
+
+
+		➡ window (browser) / global (Node)
+
+		✔ Strict Mode
+		"use strict";
+		console.log(this);
+
+
+		➡ undefined
+
+	2️⃣ Normal Function Call
+		✔ Non-Strict
+		function foo() {
+		  console.log(this);
+		}
+		foo();
+
+
+		➡ window
+
+		✔ Strict Mode
+		"use strict";
+		function foo() {
+		  console.log(this);
+		}
+		foo();
+
+
+		➡ undefined
+
+	3️⃣ Object Method
+		const obj = {
+		  name: "JS",
+		  show() {
+		    console.log(this.name);
+		  }
+		};
+		obj.show();
+
+
+		➡ this = obj
+
+	4️⃣ Method Extracted from Object ⚠️ (VERY IMPORTANT)
+		const obj = {
+		  name: "JS",
+		  show() {
+		    console.log(this.name);
+		  }
+		};
+
+		const fn = obj.show;
+		fn();
+
+		obj.show → just a function
+
+		You copy the function into fn
+
+		❌ You do NOT copy the object
+		➡ this = window / undefined
+
+		✔ Because call-site decides this
+		
+		inner() — problem starts ⚠️
+		function inner() {
+		  console.log(this.name);
+		}
+		inner();
+
+		IMPORTANT:
+
+		inner() is called as a normal function
+
+		NOT as obj.inner()
+		
+		When a method is detached from its object, it loses its this.
+
+	5️⃣ Arrow Function (Lexical this) 🔥
+		✔ Arrow inside Object
+		const obj = {
+		  name: "JS",
+		  show: () => {
+		    console.log(this.name);
+		  }
+		};
+		obj.show();
+
+
+		➡ undefined ❌
+		(Arrow does NOT bind this)
+
+		✔ Arrow inside Normal Function
+		function outer() {
+		  this.name = "JS";
+		  const arrow = () => console.log(this.name);
+		  arrow();
+		}
+		outer();
+
+
+		➡ this = window
+
+	6️⃣ Arrow as Callback
+		const obj = {
+		  name: "JS",
+		  show() {
+		    setTimeout(() => {
+		      console.log(this.name);
+		    }, 1000);
+		  }
+		};
+		obj.show();
+
+
+		➡ this = obj ✔
+		(Arrow inherits this from show)
+
+	7️⃣ Regular Function as Callback ⚠️
+		const obj = {
+		  name: "JS",
+		  show() {
+		    setTimeout(function () {
+		      console.log(this.name);
+		    }, 1000);
+		  }
+		};
+		obj.show();
+
+
+		➡ undefined / window ❌
+
+		✔ Fix using arrow or bind
+
+	8️⃣ Constructor Function (new) 🔥
+		function User(name) {
+		  this.name = name;
+		}
+		const u = new User("JS");
+
+
+		➡ this = newly created object
+
+	9️⃣ Class Methods (ES6)
+		class User {
+		  constructor(name) {
+		    this.name = name;
+		  }
+		  show() {
+		    console.log(this.name);
+		  }
+		}
+
+
+		✔ Called as obj.show()
+		➡ this = obj
+
+	🔟 call, apply, bind (Explicit Binding)
+		function show() {
+		  console.log(this.name);
+		}
+		const obj = { name: "JS" };
+
+		show.call(obj);
+		show.apply(obj);
+		const fn = show.bind(obj);
+		fn();
+
+
+		➡ this = obj
+
+	1️⃣1️⃣ bind vs Arrow Function
+		const obj = {
+		  name: "JS",
+		  show() {
+		    const fn = function () {
+		      console.log(this.name);
+		    }.bind(this);
+		    fn();
+		  }
+		};
+
+
+		➡ this = obj
+
+	1️⃣2️⃣ Event Listeners 🔥
+		✔ Regular Function
+		button.addEventListener("click", function () {
+		  console.log(this);
+		});
+
+
+		➡ this = button
+
+		✔ Arrow Function
+		button.addEventListener("click", () => {
+		  console.log(this);
+		});
+
+
+		➡ this = lexical (window)
+
+	1️⃣3️⃣ DOM Inline Event Handler
+		<button onclick="console.log(this)">Click</button>
+
+
+		➡ this = button
+
+	1️⃣4️⃣ this in setTimeout / setInterval
+		Function Type	Value of this
+		Regular function	window / undefined
+		Arrow function		lexical
+	
+	1️⃣5️⃣ Getter / Setter
+		const obj = {
+		  name: "JS",
+		  get show() {
+		    return this.name;
+		  }
+		};
+
+
+		➡ this = obj
+
+	1️⃣6️⃣ this in IIFE
+		(function () {
+		  console.log(this);
+		})();
+
+
+		➡ window
+
+		(() => {
+		  console.log(this);
+		})();
+
+
+		➡ lexical
+
+	1️⃣7️⃣ this in Module (ES Module)
+		console.log(this);
+
+
+		➡ undefined (top-level)
+
+	1️⃣8️⃣ this in Node.js
+		Context	Value
+		Top-level file	{}
+		Inside function	global
+		Arrow function	lexical
+	1️⃣9️⃣ this inside Array Methods
+		const obj = { val: 10 };
+
+		[1].forEach(function () {
+		  console.log(this.val);
+		}, obj);
+
+
+		➡ this = obj
+
+	2️⃣0️⃣ thisArg (map, filter, forEach)
+		function show() {
+		  console.log(this.val);
+		}
+		[1, 2].map(show, { val: 10 });
+
+
+		➡ this = { val: 10 }
+
+	2️⃣1️⃣ this with with (Deprecated)
+		with (obj) {
+		  console.log(this);
+		}
+
+
+		➡ ❌ unpredictable (avoid)
+
+Closures:
+	A closure is a function bundled together with its lexical environment.
+
+	Or simply:
+
+	A function that remembers variables from where it was created, even after that outer function has finished execution.
+
+
+	🔹 Given Code
+		function outer() {
+		  let count = 0;
+
+		  return function inner() {
+		    count++;
+		    console.log(count);
+		  };
+		}
+
+
+		🧠 Step-by-Step Execution (VERY IMPORTANT)
+		1️⃣ Call outer()
+			const fn = outer();
+
+
+
+			outer() runs
+
+
+			count = 0 created
+
+
+			inner() function is returned
+
+
+			⚠️ Outer function finishes execution
+
+		2️⃣ Why count is NOT destroyed?
+			Because inner() still needs it.
+			👉 JS does not garbage collect count
+			👉 It is kept inside a closure scope
+
+		3️⃣ Call fn()
+			fn(); // 1
+			fn(); // 2
+			fn(); // 3
+
+			Each time:
+
+
+			count is read
+
+
+			Incremented
+
+
+			Remembered
+
+
+		✅ State is preserved
+
+			🔥 VISUAL MEMORY MODEL
+			fn → inner()
+			       ↳ [[Closure]]
+				   count = 0 → 1 → 2 → 3
+
+
+			📌 USE CASES OF CLOSURES (IN DETAIL)
+
+			1️⃣ Data Hiding (Encapsulation)
+			❓ Problem
+			Prevent direct access to variables
+
+		✅ Using Closure
+			function counter() {
+			  let count = 0; // private
+
+			  return {
+			    increment() {
+			      count++;
+			      return count;
+			    },
+			    decrement() {
+			      count--;
+			      return count;
+			    }
+			  };
+			}
+
+			const c = counter();
+
+			c.increment(); // 1
+			c.increment(); // 2
+			c.decrement(); // 1
+
+			console.log(c.count); // ❌ undefined
+
+			🧠 Why?
+
+
+			count is private
+
+
+			Only accessible via returned functions
+
+
+			📌 Used in:
+
+
+			Libraries
+
+
+			State management
+
+
+			Secure APIs
+
+
+
+		2️⃣ Currying 🔥
+		❓ What is Currying?
+
+			Transforming a function with multiple arguments into a sequence of functions with single arguments.
+
+
+			Without Closure
+			function add(a, b, c) {
+			  return a + b + c;
+			}
+
+
+			With Closure
+			function add(a) {
+			  return function (b) {
+			    return function (c) {
+			      return a + b + c;
+			    };
+			  };
+			}
+
+			add(1)(2)(3); // 6
+
+
+			🧠 How Closure Works Here
+
+
+			a remembered
+
+
+			b remembered
+
+
+			finally compute with c
+
+
+
+		🔥 Real Interview Pattern
+		const multiply = a => b => a * b;
+
+		multiply(5)(2); // 10
+
+
+		3️⃣ Memoization (Performance Optimization)
+		❓ Problem
+		Avoid recalculating expensive functions
+
+		Without Memoization
+		function slowSquare(n) {
+		  console.log("Calculating...");
+		  return n * n;
+		}
+
+
+		✅ With Closure (Memoization)
+			function memoizedSquare() {
+			  const cache = {}; // preserved
+
+			  return function (n) {
+			    if (cache[n]) {
+			      return cache[n];
+			    }
+
+			    console.log("Calculating...");
+			    cache[n] = n * n;
+			    return cache[n];
+			  };
+			}
+
+			const square = memoizedSquare();
+
+			square(4); // Calculating... → 16
+			square(4); // 16 (cached)
+
+
+			🧠 Why Closure?
+
+
+			cache persists
+
+
+			Faster repeated calls
+
+
+			📌 Used in:
+
+
+			React
+
+
+			DP problems
+
+
+			Optimization-heavy apps
+
+
+
+		4️⃣ Debouncing 🔥🔥
+			❓ Problem
+			Avoid calling function repeatedly (search box, resize)
+
+			❌ Without Debounce
+			Every keystroke triggers API call
+
+			✅ With Closure
+			function debounce(fn, delay) {
+			  let timer;
+
+			  return function (...args) {
+			    clearTimeout(timer);
+
+			    timer = setTimeout(() => {
+			      fn.apply(this, args);
+			    }, delay);
+			  };
+			}
+
+
+			🧠 Closure Here
+
+
+			timer is remembered
+
+
+			Previous timer cleared
+
+
+			Only last call runs
+
+
+			📌 Used in:
+
+
+			Search input
+
+
+			Resize events
+
+
+
+		5️⃣ Throttling 🔥🔥
+			❓ Problem
+			Limit function execution rate (scroll, mousemove)
+
+			✅ With Closure
+			function throttle(fn, limit) {
+			  let inThrottle = false;
+
+			  return function (...args) {
+			    if (!inThrottle) {
+			      fn.apply(this, args);
+			      inThrottle = true;
+
+			      setTimeout(() => {
+				inThrottle = false;
+			      }, limit);
+			    }
+			  };
+			}
+
+
+			🧠 Closure Here
+
+
+			inThrottle state preserved
+
+
+			Controls execution rate
+
+
+
+		6️⃣ Function Factory (Advanced)
+			function multiplier(x) {
+			  return function (y) {
+			    return x * y;
+			  };
+			}
+
+			const double = multiplier(2);
+			const triple = multiplier(3);
+
+			double(5); // 10
+			triple(5); // 15
+
+
+		7️⃣ Loop + Closure (MOST ASKED TRAP) ⚠️
+			for (var i = 1; i <= 3; i++) {
+			  setTimeout(() => console.log(i), 1000);
+			}
+
+			Output:
+			4 4 4
+
+			❌ Because var is function-scoped
+
+			✅ Fix Using let
+			for (let i = 1; i <= 3; i++) {
+			  setTimeout(() => console.log(i), 1000);
+			}
+
+
+			✅ Fix Using Closure
+			for (var i = 1; i <= 3; i++) {
+			  (function (i) {
+			    setTimeout(() => console.log(i), 1000);
+			  })(i);
+			}
+
+
+		🧠 MEMORY & GARBAGE COLLECTION
+
+
+		Closure variables stay in memory
+
+
+		Risk of memory leaks
+
+
+		Avoid storing large objects unnecessarily
+
+
+
+		🧠 INTERVIEW ONE-LINERS (MUST MEMORIZE)
+
+
+		🔹 Closure = function + lexical scope
+
+
+		🔹 JS uses lexical scoping
+
+
+		🔹 Closures preserve state
+
+
+		🔹 Used for data hiding & optimization
+
+
+
+fetch() initiates an HTTP request and resolves once response headers are received, returning a Response object whose body is a stream; res.json() asynchronously consumes that stream, parses it as JSON, and returns a Promise.

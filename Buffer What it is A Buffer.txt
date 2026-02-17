@@ -1,0 +1,16 @@
+Buffer:
+What it is: A Buffer is a chunk of raw binary data in Node.js.
+Where it’s used: Server reads files or streams from disk, network, or database.
+Why it’s needed: Node.js works with streams, and the data has to be represented in memory as binary to send it over TCP/HTTP.
+	Node opens the file and moves the file pointer to start.
+	Node reads small chunks from disk (default ~64KB) at a time.
+	Each chunk is stored temporarily in memory as a Buffer.
+	Once a chunk is ready, it can be sent immediately to wherever it needs to go.
+
+Blob (Browser / Client-side)
+
+What it is: A Blob is a binary object in the browser, often used for media, files, or raw binary data.
+
+Where it’s used: When the browser receives chunks of data from the server (like video), it can combine them into a Blob for playback or download.
+
+Why it’s needed: Browser APIs like <video> or URL.createObjectURL() need Blobs to handle raw binary data safely.

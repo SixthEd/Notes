@@ -1,0 +1,10 @@
+drawback of chat component like base64
+
+payloadTooLargerError : 413
+
+| Method         | Size         | CPU    | Performance | Best For                   |
+| -------------- | ------------ | ------ | ----------- | -------------------------- |
+| Base64         | ❌ 33% larger | ❌ slow | ❌ may block | Legacy-only                |
+| Binary         | ✅ Small      | ✅ Fast | ✅ Best      | All canvas/images          |
+| Chunked Base64 | OK           | Medium | Medium      | Only if binary unsupported |
+

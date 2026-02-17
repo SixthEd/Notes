@@ -1,0 +1,360 @@
+Node js
+It is a JavaScript runtime environment built on the V8 engine that allows you to run JavaScript outside the browser (on the backend).
+or
+Node.js is a JavaScript runtime environment built on Chrome’s V8 engine for executing JavaScript on the server.
+
+
+Express 
+Express is a lightweight web framework built on top of Node.js that helps you create servers and APIs easily.
+
+
+Middleware
+Middleware is a function that runs between the request and the response.
+
+It can:
+	Read the request
+	Modify the request
+	End the request
+	Or pass it to the next handler
+	
+Types of middleware
+1. Application-level
+	app.use(express.json());
+
+2. Route-level
+	app.get("/admin", authMiddleware, (req, res) => {
+	  res.send("Welcome");
+	});
+	
+	function authMiddleware(req, res, next) {
+		  const token = req.headers.authorization;
+
+		  if (!token) {
+		    return res.status(401).send("Unauthorized");
+		  }
+
+		  // token valid
+		  next(); // go to route handler
+	}
+
+
+3. Error-handling
+	app.use((err, req, res, next) => {
+	  res.status(500).send(err.message);
+	});
+	
+Common real middleware
+
+	express.json() → parse body
+	cors() → handle CORS
+	morgan() → logging
+	helmet() → security headers
+	auth middleware → verify token
+	
+url : http://localhost:3000/userdata
+Part		Meaning
+http		Protocol used for communication
+localhost	Refers to your own computer (127.0.0.1)
+3000		Port number (identifies which program/service)
+/userdata	Path / route handled by the server
+
+
+HTTP is the protocol that defines how computers communicate over the web.
+localhost refers to the local machine.
+A computer can run many programs at the same time, so a port number is used to identify the exact program to which the request should be sent.
+The route (/userdata) tells the server which function should handle the request.
+
+Protocol	Default Port
+HTTP		80
+HTTPS		443
+
+BodyParser
+body-parser is middleware that reads the request body and converts it into req.body so your server can easily use the data sent by the client.
+When a client sends data (JSON, form, etc.), Node receives it as a raw stream.
+body-parser parses that stream into a JavaScript object.
+
+or
+
+Express uses body-parser (or built-in express.json() in modern versions) to read the stream and convert it to JS object.
+
+
+const bodyParser = require("body-parser");
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+In Express / HTTP, there are three main types of parameters you use in requests 👇
+
+1. Route Params (Path params)
+	Defined in the URL path.
+
+		app.get("/users/:id", (req, res) => {
+		  console.log(req.params.id);
+		});
+
+
+	Request:
+	/users/42
+	
+	Access:
+	req.params.id // "42"
+
+2. Query Params
+
+	After ? in the URL.
+
+	app.get("/search", (req, res) => {
+	  console.log(req.query.q);
+	});
+
+	Request:
+	/search?q=node&page=2
+
+	Access:
+	req.query.q // "node"
+	req.query.page // "2"
+
+3. Body Params
+
+	Sent in request body (POST, PUT, PATCH).
+
+	app.post("/login", (req, res) => {
+	  console.log(req.body.email);
+	});
+
+
+	JSON body:
+	{ "email": "a@b.com", "password": "123" }
+
+
+express.json() is just Express’s built-in version of bodyParser.json(), so body-parser is no longer needed in modern apps.
+
+In ES modules, import.meta.url gives the file URL, fileURLToPath converts it to a path, and path.dirname extracts the directory path to recreate __filename and __dirname.
+
+What does express.static() do?
+
+	express.static is middleware that serves static files from a directory to the client.
+	It serves static files (HTML, CSS, JS, images) directly from a folder.
+	So the browser can access files without writing routes.
+	
+	
+	app.get('*thing', (req, res) => {
+	    res.sendFile(path.join(__dirname,'../frontend/build/index.html'))
+	});
+		*thing is a catch-all route (matches anything that didn’t match above).
+
+		Sends React’s index.html for client-side routing.
+
+		Needed for React Router so the browser can handle routes like /dashboard or /profile.
+		
+Note:
+	The handshake is automatic inside the TCP socket implementation in the OS.
+	You don’t manually implement SYN/SYN-ACK/ACK unless you are writing your own TCP stack.
+
+
+cookie:
+use cookie-parser to read the cookie from the client.
+	req.cookie.jwt
+
+“res.cookie is a helper that sets the Set-Cookie header safely; res.header('Set-Cookie') is the low-level manual version.”
+
+for manually:
+	 res.header("Set-Cookie", "token=abc; HttpOnly; Secure; SameSite=Lax; Max-Age=60");
+	 req.headers.cookie
+
+for easy:
+ 	res.cookie("token", "abc", {
+		  httpOnly: true,
+		  secure: true,
+		  sameSite: "lax",
+		  maxAge: 60000
+		});
+		
+
+.env files
+
+Environment variables are configuration values your app needs, like API keys, database URLs, or secret tokens, without hardcoding them in your code.
+
+express.Router allows us to split routes into modular files and mount them using app.use().
+
+Security:
+JWT : JSON WEB TOKEN
+
+Access Token
+
+	Short-lived token (e.g., 15 minutes).
+
+	Used to access protected resources (APIs).
+
+	Contains user info (like userId) in the payload.
+
+	Signed with your secret key.
+
+Refresh Token
+
+	Long-lived token (e.g., 7 days).
+
+	Used only to get a new access token when it expires.
+
+	Can also be signed with the same secret or a different one.
+
+	Usually stored securely (HTTP-only cookie or DB).
+
+Secret Key
+
+Token made of 3 parts 
+	header.payload.signature
+	
+	Internal Signature structure
+	signature = HMACSHA256(base64UrlEncode(header) + "." + base64UrlEncode(payload), secretKey)
+
+	jwt.verify(token, secretKey, options, callback)
+
+	The “old signature” is literally the third part of this token (signature in the string).
+	When a token is sent from the client to the server:
+
+	Authorization: Bearer <token>
+	The server splits the token by .:
+
+	token.split('.') → [header, payload, signature]
+	Here, signature is the original signature that was generated when the token was signed.
+
+	Decode header and payload from Base64Url → JSON objects.
+	Take header + payload → recompute signature using secret key:
+	
+	if (expectedSignature === oldSignature) → token valid
+	else → invalid signature
+	
+	header = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+	payload = eyJ1c2VySWQiOiIxMjM0NSIsImV4cCI6MTcwMDAwMDAwMH0
+	old signature = s1g4z5yZ2bQKxk1Gp5n4r8f9kFZ1ZQ9x2eN3cB7A
+
+	jwt.verify() recomputes a signature from header + payload + secretKey and compares it to old signature.
+
+✅ Key takeaway:
+
+The “old signature” is part of the token itself, always sent by the client.
+
+The secret key is never inside the token; it’s only used on the server to recompute the signature.
+
+If someone steals your secret key, here is exactly what happens and why everything breaks.
+
+1. Attacker can create valid tokens
+
+	They can now do the same thing your server does:
+
+	newSignature = HMAC(header.payload, stolenSecret)
+
+
+	So they can generate:
+
+	header.payload.FORGED_SIGNATURE
+
+
+	Your server will trust it, because:
+
+	It recalculates the signature
+
+	Uses the same secret key
+
+	Gets the same result
+
+	Thinks: “This token is legit”
+
+	➡️ They can log in as anyone.
+
+2. They can change the payload
+
+	They can edit:
+
+	{
+	  "userId": "999",
+	  "role": "admin"
+	}
+
+
+	Then re-sign it with the stolen key.
+
+	Your server will say:
+
+	✔ Signature valid → user is admin
+
+	➡️ Privilege escalation.
+
+3. Expiration is useless now
+
+	Even if your access token expires in 15 minutes:
+
+	They can simply create a new one with:
+
+	{ "exp": 9999999999 }
+
+
+	Sign it again → valid forever.
+
+	➡️ Token expiry becomes meaningless.
+
+4. They can attack all users
+
+	Because JWT is stateless:
+
+	No DB lookup
+
+	No session check
+
+	Only signature verification
+
+	So every API endpoint that uses JWT is now open.
+
+5. If refresh tokens use the same secret…
+
+	They can also:
+
+	Forge refresh tokens
+
+	Generate new access tokens forever
+
+	Maintain permanent access
+
+6. Why the server cannot detect this
+
+	Because verification is:
+
+	if (HMAC(data, secret) === tokenSignature)
+
+
+	And the attacker has the same secret.
+
+	So from the server’s view:
+
+	“This looks exactly like a token I created.”
+
+	There is no way to tell real vs fake.
+
+7. What must be done if secret leaks
+
+	🔁 Rotate the secret immediately
+
+	❌ Invalidate all tokens
+
+	🧹 Delete refresh tokens
+
+	🔑 Generate new secrets
+
+	🚪 Force re-login for all users
+
+8. Simple analogy
+
+	Your secret key is like the stamp of your company.
+
+	If someone steals it:
+
+	They can sign fake contracts
+
+	Pretend to be your company
+
+	And no one can tell the difference
+	
+
+do not add anything in localstorage which is secret because attackers can steal it easily 

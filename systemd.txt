@@ -1,0 +1,77 @@
+What is Systemd?
+It is an 'init system which run after kernel' 
+Init system in a linux distribution is type of process.
+Process is any task which is running on background. so Init system is most important process running on your server (PID 1)
+It is the first process that runs when you start up on Linux.
+It manages all services that running on the background.
+
+Units in Linux
+Units in systemd are resources that it's able to manage.
+These includes services, timers , mounts, automount and more.
+Units are things that systemd can manage for you and  a service is type of units
+
+Service
+systemctl status service_name = to check the status of service using systemd
+
+Service is disabled means it is not going to start up when the server starts up we have to start the service manually
+
+systemctl start service_name
+
+systemctl stop service_name
+
+systemctl restart service_name 
+
+systemctl enable service_name = service is start up when the particular computer start ups
+
+
+Now the present is disabled means distribution has configured systemd such that well new services will be disabled by default
+
+systemctl disable service_name
+
+Directories where the units files are stored
+Systemd uses unit files to understand how its need to interact with processes.
+service files are just text files which contains instructions that tells systemd how needs to manage that service. It file extension .service
+
+Sytemd Unit Directories: sorted by priorities
+1) /etc/systemd/system = common directory (highest priority file)
+2) /run/systemd/system = it stores run time systemd units
+3) /lib/systemd/system = when we install package it includes the service file it's gonna be found to that directory. It is the directory that install service file will go into.
+
+When we start the linux system. It will start the systemd and systemd will go into these directories looking for the unit files if it finds any and it will going to load those into memory. If we create own service files manually then due to priorities we have to save it into the etc/systemd/system.
+We can create overwrite configuration file which is taken into lower priority.
+Why all packages service files go into the lower priorty directory because we can overwrite its settings if the packages update.
+
+.service file
+1)Unit : Contain more general information about unit
+	Description : Identify  the unit file
+	Wants: Represent sort of prerequisite unit that must be started first. Something else is required and it happen before this unit file can start up
+	After: network.target means we want to wait until the network is available before the process
+	Documentation: what is the documentation source of the unit
+
+2) Service: configuration option that specific to service files and these option configure how the unit treated when it start ups
+	Type=notify : It is same as simple expect it is not configure to be running until the process tells systemd that it ready whereas simple type is not going to take that into 				
+		      account if it started. Its going to go ahead and assume that it's running
+	or simple : It is default and common . It causes systemd  to consider the service to be started up as soon as it starts
+	
+	ExecStart :what happens the process is startup
+	ExecStop 
+	ExecReload
+	Reload is similar to restart but it is not fully restart of the service. Reload causes to the process to reload its configuration which enable the setting to take effect
+	without user getting disconnected
+
+3) Install : It will configure what happens when a unit file is enabled or disabled
+	     Wantedby 
+	     In linux system we have different levels that define various operating stages
+		MultiUser.target means the system must have reached a state where multiple users can use the system at the same time
+
+Overwriting existed service file
+systemctl edit service-file-name Ex :systemctl edit appache2.service it will create overwrite file in same directory 
+all the changes will be seen in the etc/systemd/system/apache2.service.d/override.config because /lib/systemd/system is high priority
+
+If we want to undo the changes just remove the etc/systemd/system/apache2.service.d/override.config file
+
+Second option to edit the file: systemctl edit --full apache.service : It will create the entire copy of the service file and save it in /etc/systemd/system and save it in /etc/systemd/system/apache2.service and other benefit the under /live/systemd/system is overwrite if the package gets updated but not alter the etc/
+
+systemctl daemon-reload: we say take a look into its directories and have a look anything has changed or is unique in any kind of way just load everything in the memory the way everthing is changed regardless of which unit files we change will be all taken into account
+
+list of all service files : systemctl list-units --type=service

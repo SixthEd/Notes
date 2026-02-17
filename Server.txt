@@ -1,0 +1,142 @@
+Server:
+A server is a computer (or program) that:
+Listens for requests from clients and sends back responses.
+
+
+what will we get when we send the request https://google.com?
+What You Actually Get First
+1️⃣ First Response → HTML only
+
+Server responds:
+
+	HTTP/1.1 200 OK
+	Content-Type: text/html
+
+	<html>
+	  <link rel="stylesheet" href="/main.css">
+	  <script src="/app.js"></script>
+	</html>
+
+
+	So the first network response is only the HTML file.
+
+Then the Browser Does This
+2️⃣ Browser parses HTML
+
+	Finds:
+
+	<link href="style.css">
+
+	<script src="app.js">
+
+	<img src="logo.png">
+
+3️⃣ Browser sends NEW requests
+
+	For each file:
+
+	GET /main.css
+	GET /app.js
+	GET /logo.png
+
+4️⃣ Server sends CSS, JS, images
+
+Each is a separate HTTP request/response.
+
+Final Flow
+	google.com
+	   ↓
+	HTML
+	   ↓
+	CSS request
+	   ↓
+	JS request
+	   ↓
+	Image request
+	
+	
+When we send a request to any URL, first DNS resolves the domain name into an IP address.
+Using this IP address, the client establishes a TCP connection with the server using the 3-way handshake.
+If the site uses HTTPS, a TLS handshake happens next.
+After the secure connection is established, the client sends the HTTP request, and the server sends back the HTTP response.
+
+
+Dns :
+	DNS (Domain Name System) is like the phonebook of the internet.
+	It converts a domain name (google.com) into an IP address (142.250.190.14) that computers can understand.
+
+Tcp:
+Why TCP is needed
+The Internet (IP) is unreliable:
+	Packets can be lost
+	Arrive out of order
+	Be duplicated
+TCP fixes this by:
+	Numbering packets
+	Retransmitting lost packets
+	Reordering data
+	Controlling congestion
+	
+Protocol :
+	It is set of rules on how computer systems or programs can communicate each other.
+	or
+	It is the set of rules of behaviour, in the form of code that describe the expected behaviour
+	or
+	A protocol is a standardized set of rules and formats that define how two or more computer systems communicate, exchange data, and handle errors.
+	
+
+HTTP (HyperText Transfer Protocol) is an application-layer protocol that defines:
+	How a client (browser/app) requests data and how a server responds.
+	It is the language of communication between frontend and backend.
+	
+Why HTTP exists
+Computers already have TCP to send data.
+
+
+TCP (Transmission Control Protocol) is a reliable, connection-oriented transport protocol.
+
+It ensures that:
+	Data is delivered in order
+	Data is not lost
+	No duplicates
+	Errors are detected & corrected
+	Before sending data, TCP creates a connection between two systems.
+	
+	Client → SYN       (I want to connect)
+	Server → SYN-ACK   (I’m ready)
+	Client → ACK       (Connection established)
+	
+	
+Client                          Server
+  |                                |
+  |  --------- SYN --------------> |
+  |   (Seq = x)                    |
+  |                                |
+  |  <------ SYN + ACK ----------- |
+  |        (Seq = y, Ack = x+1)    |
+  |                                |
+  |  --------- ACK --------------> |
+  |        (Ack = y+1)             |
+  |                                |
+  |       Connection Established   |
+
+
+	
+But TCP doesn’t define:
+
+	What is a request?
+	What is a response?
+	How to ask for a page?
+	What does success or failure mean?
+	HTTP defines all of that.
+
+Protocol	   Purpose
+HTTP		Web communication
+HTTPS		Secure web
+TCP		Reliable data transfer
+UDP		Fast data transfer
+FTP		File transfer
+SMTP		Email sending
+DNS		Domain → IP lookup
+
+

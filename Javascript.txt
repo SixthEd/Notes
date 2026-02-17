@@ -1,0 +1,27 @@
+1. JavaScript can handle a single task at a time
+
+2. Call stack manages the execution of the program
+
+3. In WebApi
+   Task queues holds both Callbacks and event handlers this is when we get the event loop
+   Event loop responsibility to check if the stack is empty if that the case if nothing is running then we get the first available task from task queue
+   SetTimeout is also receive a callback and delay. The delay is it gets moved to the task queue.
+   The callbacks provided by webapi are pushed onto the task queue when the asynchronous tasks completes.
+   
+4. Promise based
+   Whenever we are working with promises we use microtask queue. It is special queue is dedicated to then catch and finally callbacks,
+   a function body execution using await, queueMicrotask callbacks, MutationObserver callbacks
+   Event loop prioritize the microtask queue. So whenever the callstack is empty the event loop first ensures that the microtask queue is entirely empty so it get all the tasks from
+   the microtask queue moves them into the callstack where they get executed only then it will move to the task queue and after each task in the task queue it again checks from 
+   microtask
+   Ex fetch
+      So whenever we call fetch it's added to the call stack this is responsible for creating promise object which by default is pending the result is undefined and we don't have 
+      any promise reactions just yet it also initials background network request that's handled by the browser the we move to the next line called then handler and this creates
+      the promise reaction record the server hasn't respond yet then finally server returns some data so the promised data set to fullfilled the promise result is now the
+      response object with the data we get from the server now the promise reaction handler is now pushed to the microtask queue.
+      Microtask is that task then can scheduled another microtask means the eventloop is constantly handling the microtask and it never gets to the task queue it would have to wait
+      
+      We can also promisify our webapi 
+      
+      
+

@@ -1,0 +1,196 @@
+Backend Security – Complete Topic List
+1. Authentication & Identity
+
+	Password hashing (bcrypt, argon2)
+
+	Salting & peppering
+
+	JWT (access & refresh tokens)
+
+	Token rotation
+
+	Session vs JWT
+
+	Cookie flags (HttpOnly, Secure, SameSite)
+
+	OAuth2 flows (Auth Code, PKCE)
+
+	SSO / OpenID Connect
+
+	2FA / MFA
+
+	API Keys
+
+	Account lockout & brute force protection
+
+2. Authorization & Access Control
+
+	RBAC (Role-based access)
+
+	ABAC (Attribute-based access)
+
+	Policy enforcement
+
+	Least privilege
+
+	Object-level authorization
+
+	Route-level authorization
+
+3. OWASP Top 10 (Backend View)
+
+	Injection (SQL/NoSQL/Command)
+
+	Broken authentication
+
+	Sensitive data exposure
+
+	XML External Entity (XXE)
+
+	Broken access control
+
+	Security misconfiguration
+
+	XSS (server-generated)
+
+	Insecure deserialization
+
+	Using vulnerable dependencies
+
+	Insufficient logging & monitoring
+
+4. Input Handling
+
+	Schema validation (Zod, Joi)
+
+	Whitelisting
+
+	Sanitization
+
+	Size limits
+
+	Content-type validation
+
+5. Cryptography
+
+	Hash vs encrypt
+
+	AES, RSA basics
+
+	TLS/HTTPS
+
+	Secure random generation
+
+	Key rotation
+
+	KMS / Vault
+
+	Password reset token security
+
+6. API Security
+
+	Rate limiting
+
+	Throttling
+
+	IP blocking
+
+	Idempotency keys
+
+	HMAC request signing
+
+	API gateways
+
+	CORS
+
+	CSRF tokens
+
+7. Database Security
+
+	Parameterized queries
+
+	Row-level security
+
+	Encryption at rest
+
+	Encrypted backups
+
+	Least privilege DB users
+
+	Audit logs
+
+8. Dependency Security
+
+	npm audit
+
+	Snyk
+
+	Lockfiles
+
+	Package signature verification
+
+	Supply chain attacks
+
+9. File & Upload Security
+
+	MIME validation
+
+	Virus scanning
+
+	Size limits
+
+	Storage isolation
+
+	Signed URLs
+
+10. Logging & Monitoring
+
+	Structured logs
+
+	Sensitive data masking
+
+	Audit trails
+
+	Intrusion detection
+
+	Alerting
+
+	11. Infrastructure Security
+
+	Reverse proxy
+
+	Firewall rules
+
+	Secrets management
+
+	Environment isolation
+
+	Container scanning
+
+	Zero-trust networks
+
+12. Advanced Topics
+
+	Rate limit bypass prevention
+
+	Timing attacks
+
+	Replay attack protection
+
+	Clickjacking prevention
+
+	Webhook verification
+
+	Distributed tracing security
+
+	Zero downtime secret rotation
+
+13. Compliance Awareness
+
+	GDPR basics
+
+	PCI DSS
+
+	SOC2
+
+	HIPAA (if applicable)

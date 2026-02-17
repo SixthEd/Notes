@@ -1,0 +1,717 @@
+React Hooks: Special functions
+
+
+Mount:
+👉 The moment a React component is created and inserted into the real DOM for the first time.
+
+
+What is Virtual DOM?
+The Virtual DOM (VDOM) is a lightweight JavaScript representation of the real DOM that React keeps in memory to decide what to change in the browser.
+
+
+React LifeCycle
+	
+	Phase 1: Component Render Trigger
+
+		A render happens when:
+			Initial mount
+			setState / useState setter called
+			props change
+			Parent re-renders
+
+	Phase 2: Render Phase (Pure, no DOM yet)
+	What React does here:
+		Calls your function component:
+		MyComponent()
+		Executes hooks:
+			useState()
+			useEffect() // only register, not run
+			useRef()
+
+
+		Returns JSX
+
+		return <h1>{count}</h1>
+
+	Phase 3: Virtual DOM Tree Creation
+		JSX → JS Objects → Virtual DOM Tree
+
+		Example:
+
+		<h1>Hello</h1>
+		
+		Becomes:
+		{
+		  type: "h1",
+		  props: { children: "Hello" }
+		}
+	
+	
+		In case of useRef
+			When React sees:
+
+				<input ref={inputRef} />
+
+
+				It does NOT touch the browser.
+
+				It creates a JS object tree (Fiber nodes):
+
+				{
+				  type: "input",
+				  props: { ref: inputRef },
+				  stateNode: null,
+				}
+
+
+				📌 Important:
+
+					This is not HTML
+
+					No browser involved
+
+					No layout, no paint
+
+					Only React’s internal data structure
+
+				This phase is:
+
+					Render Phase (pure, no side effects)
+
+				3️⃣ DOM Created — Browser memory
+
+					Now React enters commit phase.
+
+					It sees the Fiber node and runs:
+
+						const dom = document.createElement("input");
+		
+					This creates:
+
+						<input>
+						
+					Now React performs side effects:
+
+						inputRef.current = domNode;
+
+
+						This happens after the node is mounted, not during render.
+
+					This guarantees:
+
+						ref.current always points to a real DOM element.
+
+		This tree is NOT real DOM.
+		It lives in memory only.
+
+	Phase 4: Diffing (Reconciliation)
+
+		React compares:
+		    New React Element Tree
+			    VS
+		    Current Fiber Tree
+
+
+		This process is called Reconciliation.
+
+	React finds:
+
+		What changed
+
+		What stayed same
+
+		What must be added/removed
+
+		Only the difference is calculated.
+
+	Phase 5: Commit Phase (Real DOM Update)
+
+	Now React applies the changes to the real DOM:
+
+		Create nodes
+
+		Remove nodes
+
+		Update text/props
+
+		This is when:
+
+		ref.current is set
+
+		Browser DOM is updated
+
+		Phase 6: Effects Run
+
+	After DOM paint:
+
+	useEffect(() => {
+	  console.log("DOM ready");
+	}, []);
+
+
+	Runs after commit phase.
+
+	🧠 Visual Timeline
+	
+		State / Props change
+			↓
+		Scheduler assigns priority (lane)
+			↓
+		Render Phase:
+		   Component function runs
+		   JSX → React Elements (Virtual DOM description)
+			↓
+		Reconciliation:
+		   New React Elements
+			  VS
+		   previous (existing) Fiber Tree
+		   → Reuse / update / create fibers
+		   Update props/state in Fiber nodes
+			↓
+		Mark flags (Placement, Update, Deletion)
+			↓
+		Work-in-progress Fiber tree built
+			↓
+		Commit Phase:
+		   Apply DOM mutations
+		   Attach refs
+			↓
+		useLayoutEffect runs
+			↓
+		Browser Paint
+			↓
+		useEffect runs
+
+		
+	first time component mount
+	
+		Component mounts
+			↓
+		Component function runs
+			↓
+		JSX → React Elements (Virtual DOM description)
+			↓
+		Reconciliation starts
+			↓
+		Fiber tree is created from React Elements
+			↓
+		Render phase builds work tree (no DOM yet)
+			↓
+		Commit phase:
+		   → Create real DOM nodes
+		   → Attach refs
+		   → Apply props
+			↓
+		useLayoutEffect runs
+			↓
+		Browser paints
+			↓
+		useEffect runs
+
+
+
+functions are different on every render by default
+
+Memoization is an optimization technique in computer science where the results of expensive function calls are stored (cached) to avoid redundant computations
+
+1. UseCallback : useCallback is a React Hook that lets you cache a function definition between re-renders.
+
+	UseCallback(fn, dependencies)
+	
+	UseCallback(()=>{
+		
+	},[])
+	
+	fn : 	It is cache function.
+	 	React will give you the same function again if the dependencies have not changed since the last render. Otherwise, it will give you the function that you have passed 
+	 	during the current render, and store it in case it can be reused later. 
+	
+	dependencies : The list of all reactive values referenced inside of the fn code. Reactive values include props, state, and all the variables and functions declared directly 			
+	 		inside your component body
+	 		
+	During subsequent renders, it will either return an already stored fn  function from the last render (if the dependencies haven’t changed), or return the fn function you 
+	have passed during this render.
+	
+	Every time my component renders, useCallback returns a different function 
+	Make sure you’ve specified the dependency array as a second argument!
+	If you forget the dependency array, useCallback will return a new function every time
+	
+	Dependency Comparison Rule
+
+	React uses:
+
+	Object.is(prev, next)
+
+	Primitive → value comparison
+
+	Object → reference comparison
+	
+
+2. useEffect
+
+	useEffect is a React Hook used to perform side effects in function components after rendering.
+	
+	useEffect(setup, dependencies?)
+	
+	Ex : useEffect(()=>{},[])
+	
+	It returns undefined.
+	
+	Your setup function may also optionally return a cleanup function. When your component is added to the DOM, React will run your setup function.
+	
+	React will generally let the browser paint the updated screen first before running your Effect. If your Effect is doing something visual (for example, positioning a tooltip)
+	, and the delay is noticeable (for example, it flickers), replace useEffect with useLayoutEffect.
+	
+	My Effect runs twice when the component mounts:
+	When Strict Mode is on, in development, React runs setup and cleanup one extra time before the actual setup. This is a stress-test that verifies your Effect’s logic is 		
+	implemented correctly. If this causes visible issues, your cleanup function is missing some logic. The cleanup function should stop or undo whatever the setup function was 
+	doing. The rule of thumb is that the user shouldn’t be able to distinguish between the setup being called once (as in production) and a 
+	setup → cleanup → setup sequence (as in development).
+	
+	useEffect keeps re-running in an infinite cycle when we forget to add [] dependency array in useEffect
+	
+	When a dependency changes, React first runs the cleanup function from the previous effect, then runs the effect function again with the updated values.
+	
+	Cleanup function runs when component is unmount or dependency array state changes
+	
+	Execution Order (VERY IMPORTANT)
+	Render → Paint UI → useEffect runs
+	
+	
+	State/props change
+		↓
+	   Re-render
+		↓
+	Compare dependencies
+		↓
+	Cleanup (previous)
+		↓
+	Effect runs (new)
+		
+	Infinite Loop Trap ⚠️
+		useEffect(() => {
+		  setCount(count + 1);
+		}, [count]); // ❌ infinite loop
+		Fix
+		useEffect(() => {
+		  setCount(prev => prev + 1);
+		}, []); // or guard condition
+		
+	Prevent Memory Leaks		
+			
+		useEffect(() => {
+		  const id = setInterval(() => {
+		    console.log("tick");
+		  }, 1000);
+
+		  return () => clearInterval(id);
+		}, []);
+	
+	Avoid Duplicate Event Listeners
+	
+		useEffect(() => {
+		window.addEventListener("resize", handleResize);
+
+
+		return () => {
+		window.removeEventListener("resize", handleResize);
+		};
+		}, [width]);
+	
+	Prevent Stale Subscriptions (API / WebSocket)
+		
+		useEffect(() => {
+		socket.connect(roomId);
+		return () => socket.disconnect();
+		}, [roomId]);
+		
+	Cancel Async Work: Prevents setState from running after the component unmounts or when url changes
+		
+		useEffect(() => {
+		let active = true;
+
+		fetch(url).then(res => {
+		if (active) setData(res);
+		});
+
+
+		return () => {
+		active = false;
+		};
+		}, [url]);
+
+3. Memo
+  
+  	memo lets you skip re-rendering a component when its props are unchanged.
+  	
+  	It compare previous render with new render and if it is different then render the component. 
+  	
+  	React.memo → memoizes a component
+	export default React.memo(Component);
+
+	📌 Meaning:
+
+		“Re-render this component only if props change.”
+
+4. useLayoutEffect
+	
+	useLayoutEffect is a version of useEffect that fires before the browser repaints the screen.
+
+5. useRef
+	
+	useRef is a React Hook that lets you reference a value that’s not needed for rendering.
+
+	useRef returns a ref object with a single current property initially set to the initial value you provided.
+
+	On the next renders, useRef will return the same object. You can change its current property to store information and read it later.
+	Changing it does not trigger a re-render (unlike state variables, which trigger a re-render).
+	Changing a ref does not trigger a re-render, so refs are not appropriate for storing information you want to display on the screen. Use state for that instead.
+	
+	It’s particularly common to use a ref to manipulate the DOM. React has built-in support for this.
+	
+	import { useRef } from 'react';
+	
+	function MyComponent() {
+  		const inputRef = useRef(null);
+  		// ...
+  	
+  	 return <input ref={inputRef} />;
+  	 
+  	 When to use ref variable in dependency array?
+  	 Tracking DOM element change (uncommon)
+  	 
+  	 Use for accessing HTML dom element property
+  	 
+  	 Use
+  	 DOM Access (MOST COMMON)
+  	 
+  	 	const inputRef = useRef(null);
+  	 	
+		useEffect(() => {
+		inputRef.current.focus();
+		}, []);
+
+
+	return <input ref={inputRef} />;
+	
+	Skip First Render (Classic Pattern)
+		const isFirst = useRef(true);
+
+
+		useEffect(() => {
+		  if (isFirst.current) {
+		    isFirst.current = false;
+		    return;
+		  }
+
+
+		  console.log("Runs after first render");
+		}, [value]);
+  	 
+  	 
+What is react component?
+	Components are independent and reusable bits of code. They serve the same purpose as JavaScript functions, but work in isolation and return HTML.
+
+What is JSX?
+	JSX, which stands for JavaScript XML, is a syntax extension for JavaScript that allows developers to write HTML-like code within their JavaScript files.
+
+How do you pass data from a child to a parent component?
+	In React, data flows from parent to child via props, but to send data from a child to a parent, you pass a callback function from the parent to the child, and the child calls 		
+	it with the data.
+
+UseState:
+	useState is a React Hook that lets you add a state variable to your component.
+		or
+	useState is a React Hook that allows functional components to hold, update, and preserve data (state) across renders, triggering a re-render when the state changes.
+	
+	Compare refrenece
+
+	react update set when the function is over;
+	State updates are queued, batched, and applied during the render phase.
+	What useState Actually Compares
+
+	When you call:
+
+	setState(newState);
+
+	React does this internally:
+
+	Object.is(previousState, newState)
+	
+	“useState compares the previous state and the next state using Object.is. If they are the same, React skips re-rendering; the initial value is only used on the first render.”
+	
+	setCount does NOT update the state immediately.It schedules a state update, and the actual state change + re-render happens after the current function execution and render 
+	cycle completes.
+	
+
+Note:
+	In react , functions are different on every render by default means func === func give false
+	useCallback memoize function from the previous render
+	or
+	“useCallback returns the same function reference from the previous render as long as its dependencies don’t change, preventing unnecessary re-renders and effect executions.”
+	
+	useCallback + memo is important
+	memo compare prev props with new if it it different the re-render the child component
+	
+	Use useCallback only when a function is a dependency or passed to a memoized child. Otherwise, don’t use it.(better)
+	
+	“Even if state changes, a useCallback function won’t be recreated unless its dependencies change, which can cause stale closures.”
+	
+	
+	“A dependency array can contain state, props, functions, objects, or any value from the component scope that affects the hook’s logic; React re-runs the hook when any
+	dependency’s reference changes ( do not add useRef)
+	
+	
+	useState is created only once (on mount).
+	On re-renders, React reuses the same state stored internally.
+	
+	
+	Objects & Arrays (Be Careful ⚠️)
+	const options = { method: "GET" };
+
+
+	useEffect(() => {
+	  fetch(url, options);
+	}, [options]); // ⚠️ re-created each render	
+
+	✔ Allowed
+	❌ Causes re-run every render
+
+	✅ Fix with useMemo:
+
+	const options = useMemo(() => ({ method: "GET" }), []);
+	
+	
+	React calls your component function again to compute UI.
+	
+	“Re-render means React re-executes the component function using existing state, while re-create means the component is unmounted and mounted again, resetting all hooks and 
+	state.”
+	
+	❌ What does NOT happen on re-render:
+
+		useState ❌ not recreated
+
+		useRef ❌ not recreated
+
+		DOM ❌ not fully rebuilt
+	
+	Item			Recreated on Re-render?			Persists?
+	Normal variable (let, const)	✅ Yes				❌ No
+	Function			✅ Yes				❌ No
+	useState value			❌ 				✅ Yes
+	useRef.current			❌ 				✅ Yes
+	useCallback function		❌ (if deps same)		✅ Yes
+	useMemo value			❌ (if deps same)		✅ Yes
+	
+	
+	Golden Rule (REMEMBER THIS)
+	Every render = new JS execution
+	Only hooks preserve values
+	
+	“On every re-render, normal variables and functions are recreated because the component function runs again; only hook values persist across renders.”
+	
+	When count changes, the component re-renders first. During that re-render, useCallback creates a NEW function (because count changed). That new function will use the UPDATED 
+	count when it is later called.
+	
+	
+	You cannot “change” a normal variable and expect React to react
+
+	👉 React does NOT track normal variables
+	👉 Only state or props trigger re-renders	
+	
+	
+	Memoization is an optimization technique where we cache a value (or function) and return the cached version if inputs haven’t changed.
+	or
+	Memoization means caching the result of a computation or function so that it can be reused when the inputs haven’t changed, improving performance by avoiding unnecessary 
+	recalculations.
+	
+	You can include a ref in a dependency array, but since the ref object is stable and updating ref.current doesn’t trigger a re-render, it usually has no effect and is rarely
+	useful.
+	
+	ref value are not use in return body of the actual component
+	It is use for value which is not need for rendering
+
+
+	Event handler starts
+		↓
+	All setState calls are QUEUED
+		↓
+	React calculates final state
+		↓
+	ONE re-render happens
+		↓
+	DOM updates + effects run
+		
+	Normal variable → recreated every render
+	useRef → remembered by React
+
+5 useMemo
+	same as useCallback but it memoize the previous value from previous render.
+	
+	or
+	useMemo is used to memoize expensive computations or stabilize object references so they are recomputed only when their dependencies change.
+	
+	useMemo runs during render
+	Dependencies compared using Object.is
+	Primitive → by value
+	Object / Array → by reference
+	
+	1️⃣ Avoid expensive recalculations (PRIMARY USE)
+
+		When a calculation is slow and runs on every render.
+		const filteredUsers = useMemo(() => {
+		  return users.filter(u => u.includes(search));
+		}, [users, search]);
+
+		✔ Runs only when users or search changes
+		❌ Without useMemo → runs on every render
+		
+		Stabilize object / array references
+
+	2 Prevents unnecessary re-renders or effect executions.
+
+		const options = useMemo(() => ({
+		  method: "GET",
+		  headers: { auth: token }
+		}), [token]);
+
+		✔ Prevents new object creation every render
+		✔ Useful when object is passed as prop or effect dependency
+		
+
+6 useReducer?
+
+	useReducer is a React Hook used for managing complex state logic using a reducer function.
+	
+	useState  → simple state
+	useReducer → complex state logic
+	
+	const [state, dispatch] = useReducer(reducer, initialState);
+	state → current state
+
+	dispatch → function to send actions
+
+	reducer → decides how state changes
+
+	initialState → starting value
+	
+	
+	dispatch(action)
+		↓
+	reducer(currentState, action)
+		↓
+	returns newState
+		↓
+	React compares state
+		↓
+	Re-render if changed
+
+7. useTransition:
+	
+	useTransition lets you mark some state updates as non-urgent, so React keeps the UI responsive while doing heavy work.
+	
+	const [isPending, startTransition] = useTransition();
+	
+	Example:
+	function handleChange(e) {
+		const value = e.target.value;
+
+
+		setText(value); // urgent (typing stays smooth)
+
+
+		startTransition(() => {
+			const filtered = bigList.filter(item =>
+			item.includes(value)
+		);
+		setList(filtered); // non-urgent
+		});
+	}
+	
+	
+	What changes now?
+		Clicking About / Login
+		Urgent update
+			→ React renders immediately
+			→ UI changes instantly
+	
+	Clicking Page (heavy)
+	     Click
+		↓
+	startTransition
+		↓
+	React marks it as NON-URGENT
+		↓
+	UI stays responsive
+		↓
+	React prepares 250-item render in background
+		↓
+	When ready → swap UI
+	
+	
+	isPending becomes false only after the transition render is committed to the DOM.
+
+		Not when it starts rendering —
+		Not when JS finishes —
+		Only when React finishes painting the new UI.
+	
+	React’s internal timeline
+	
+		Text change
+			↓
+		Urgent render (input updates instantly)
+			↓
+		Transition render is scheduled
+			↓
+		React works on the heavy list in background
+			↓
+		isPending = true
+			↓
+		React finishes rendering list
+			↓
+		   DOM commit
+			↓
+		isPending = false
+	
+	
+	
+	Timeline
+
+	1️⃣ Click "page" → heavy page
+
+		startTransition schedules setItems("page") → low-priority
+		React continues rendering any urgent updates
+		isPending = true
+		Heavy page is being prepared in background
+		
+	2️⃣ Before heavy page finishes, click "notPage" → light page
+
+		setItems("notPage") → urgent state update
+		React immediately re-renders component
+		DOM updates instantly to "notPage"
+
+	3️⃣ Heavy page finally finishes in background
+
+		React checks if the transition is still relevant
+		Since state was updated urgently to "notPage", heavy transition is **discarded**
+		isPending = false
+		DOM remains on "notPage"
+
+	✅ Key points:
+
+		Transitions are interruptible: low-priority updates can be canceled if a new urgent update comes.
+
+		isPending only remains true while the transition is in progress.
+
+		The UI always shows the latest urgent update, not the old heavy render.
+		
+What is useContext?
+
+useContext lets a component read data from a Context that is provided by a parent component — without passing props through every level.
+
+Disadvantage:
+	if a useContext re-render then children which are not using they will be re-render.
+	or
+	Whenever the context value changes, ALL components that use that context re-render, even if they only use a small part.
+
+It solves the prop drilling problem.

@@ -1,0 +1,41 @@
+JavaScript Execution Context
+
+When we load a script or invoke a function a new execution Context is created and pushed onto the callStack (stack)
+
+What is execution context define the environment in which code is executed it contains many internal component that engines uses to keep track of the execution flow of the piece of 
+code
+execution context uses environmental records to keep track and maintain the identifier bindings that have been created for the variable declarations and function declaration all the
+values within that context.
+
+Whenever we run the script so first script is loaded the global execution context is created and every execution context goes through two phases
+first phase we have the creation phase in which memory space is set variable declarations and function declaration and so on within that context and then 
+we have execution phase in which execution context is in the callstack and the code is actually executed
+
+Global execution context has many component
+Realm, lexical and variable environment
+Realm points to realm record
+Realm is essentially an isolated environment in which code runs ex :In browsers new realms is created when we open the new tab or refresh the page
+Realm consists several components :
+Intrinsics, Global object , Global environment record
+Intrinsics provides all the standard built-in objects and functions that are essentially just foundational for executing javascript like array , syntax error and so on
+Global object which contains several types of properties
+	Specifications: defines properties which is essentially just expose the intrinsic so array functions all the javascript stuff is on the global object Example 
+			array,Bigint,Error so on.
+	Host Properties: in a browser things like fetch, localstorage, setTimeOut, document etc...
+	User Properties: as developers we can explicitly add properties to the global object or we can do it implicitly whenever we declare a function in the global Scope or we have
+			 a variable using var keyword in the global this are added in the global
+
+Global environment record: It manages the identifier bindings within the context these values are accessible through entire script 
+Global environment record contains another global objects it reference to global object so this is used by variable with var keywords function declarations on the globle scope.
+
+
+
+
+In creation phase, first encounter variable first name which is declared with const keyword it uses the execution context lexical environment this in turn points to global environment record this again uses the declarative record to handle the identifier bindings created with the const keyword and something about variable created with const and let keywords and also classes is that they are unintialized meaning that memory space is setup they're hoisted but they don't have any value yet they are uninitialized, they're only
+intialized during the execution phase of execution context so they are stored so memory allocated for them but they have no value yet
+then we have function greet , function declaration are manage by object record , functions are initialized during the creation phase so new function object is created and it contains many properties two of which environment and global environment and also has call method so now the global execution context added to callstack and executed.
+when greet() invoke then call method and this create new function execution context and it will go through two phase in this case lexical environment contains brand new function 
+environment record this manage the identifiers binding for the parameter variable and function declarations within this function it also has outer environment which points to the
+environment of the function object in this case global environment record
+From the start to the declaration zone is called  firstname temporal dead zone 
+var variable are intialized undefined  in global object record redefined with the actual value during the execution phase 	 callStack 

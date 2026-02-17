@@ -1,0 +1,252 @@
+Array:
+Use : 
+1. Efficient Random Access (Indexing)
+Arrays allow direct access to any element using its index.
+Time complexity: O(1).
+
+2. Grouping Similar Data
+Instead of creating 10 separate variables:
+int s1, s2, s3, ..., s10;
+
+You can use an array:
+int scores[10];
+
+Makes programs shorter, cleaner, easier to manage.
+
+3. Cache Friendliness
+Because arrays are stored in contiguous memory, CPUs can load them efficiently into cache.
+This improves performance in loops and computations.
+That’s why arrays are often faster than linked lists.
+
+Limitations:
+1. Fixed size (in many languages)
+In languages like C, C++, Java → once you declare the size of an array, you cannot change it.
+
+Example (Java):
+int arr[] = new int[5]; // can only hold 5 elements
+
+You’d need to create a new array if you want to resize.
+(Note: In JavaScript or Python, arrays/lists are dynamic, but internally resizing still costs performance.)
+
+2. Homogeneous elements (in strongly typed languages)
+Arrays usually store only one data type.
+
+Example (Java):
+int arr[] = {1, "hello"}; // ❌ not allowed
+
+(But in JavaScript arrays can hold mixed types because they’re objects.)
+
+3. Inefficient insertions and deletions
+Adding or removing elements in the middle of an array requires shifting other elements.
+Time complexity: O(n).
+
+4. Contiguous memory requirement
+
+An array stores elements in consecutive memory locations.
+
+Example: if an int takes 4 bytes, then an array of 5 ints needs 20 bytes in a single block.
+Address → 1000 | 1004 | 1008 | 1012 | 1016
+Value   →   10 |   20 |   30 |   40 |   50
+
+This means the system must find one continuous free chunk of memory.
+For small arrays, that’s easy.
+
+For very large arrays, memory might be fragmented (broken into smaller chunks), so the system may fail to allocate even if total free memory is large enough.
+
+⚠️ Example:
+You want an array of 1 million integers (~4 MB).
+
+If memory is fragmented, the OS may not find a continuous 4 MB block → allocation fails.
+
+
+5. Wasted memory or overflow risk
+
+When you declare an array, you must decide the size in advance (in static languages like C, C++, Java).
+If you overestimate size (make it too big):
+Many elements remain unused → wasted memory.
+
+int arr[1000]; // only use 10
+// 990 integers wasted
+
+
+If you underestimate size (make it too small):
+You risk overflow or need to reallocate a new larger array and copy data (costly).
+
+int arr[5] = {1,2,3,4,5};
+arr[6] = 99;  // ❌ out of bounds → overflow / undefined behavior
+
+
+ var gcd = function (a, b) {
+        return a == 0 ? b : gcd(b % a, a);
+    };
+    
+
+Monotonic stack:
+
+✅ Monotonic Stack – All Use Cases Explained
+
+A monotonic stack is a stack that maintains its elements in either strictly increasing or strictly decreasing order. It's a powerful tool used in solving problems that require looking at previous or next greater/smaller elements efficiently.
+
+▶ What is a monotonic stack used for?
+
+To find next greater/smaller or previous greater/smaller elements
+
+To optimize brute-force comparisons from O(n²) to O(n)
+
+To process sequences where local maxima or minima matter
+
+To avoid nested loops when scanning adjacent elements
+
+✅ Types of Monotonic Stacks
+
+Monotonically Increasing Stack
+Stack elements are in increasing order from bottom to top.
+
+Monotonically Decreasing Stack
+Stack elements are in decreasing order from bottom to top.
+
+✅ All Common Use Cases for Monotonic Stacks
+▶ 1. Next Greater Element (NGE)
+
+Find the next greater element for each item in an array.
+
+Example:
+Input: [2, 1, 2, 4, 3]
+Output: [4, 2, 4, -1, -1]
+You want to know, for each number, what's the next greater one.
+
+▶ 2. Next Smaller Element (NSE)
+
+Find the next smaller element for each item.
+
+Example:
+Input: [4, 5, 2, 10, 8]
+Output: [2, 2, -1, 8, -1]
+
+▶ 3. Previous Greater Element (PGE)
+
+Find the closest previous element that is greater.
+
+Example:
+Input: [3, 2, 1, 4]
+Output: [-1, 3, 2, -1]
+
+▶ 4. Previous Smaller Element (PSE)
+
+Find the closest previous element that is smaller.
+
+▶ 5. Largest Rectangle in Histogram
+
+Given the heights of histogram bars, find the largest rectangle area that can be formed.
+
+Problem Type:
+You need to know when to extend or stop the rectangle → use a monotonic stack to process heights efficiently.
+
+▶ 6. Trapping Rain Water
+
+Find how much water can be trapped after raining.
+
+Problem Type:
+Use stacks to keep track of boundaries and calculate trapped water between bars.
+
+▶ 7. Daily Temperatures
+
+For each day, find how many days you need to wait until a warmer temperature.
+
+Example:
+Input: [73,74,75,71,69,72,76,73]
+Output: [1,1,4,2,1,1,0,0]
+
+▶ 8. Stock Span Problem
+
+Find how many consecutive days before today the stock price was less than or equal to today's price.
+
+▶ 9. Building Sunset View
+
+Determine which buildings can see the sunset based on their heights.
+
+Problem Type:
+A monotonically decreasing stack helps track taller buildings to the right.
+
+▶ 10. Remove Duplicate Letters / Lexicographically Smallest Subsequence
+
+Use a stack to build a sequence while ensuring order and uniqueness.
+
+▶ 11. Valid Parentheses or Balanced Brackets
+
+Though not always a monotonic stack, using stacks to track opening and closing elements is related.
+
+▶ 12. Sliding Window Maximum
+
+While deque-based, the approach is similar to maintaining a decreasing sequence.
+
+▶ 13. Pattern Problems (e.g., Mountain Array, Valley Points)
+
+Monotonic stacks can help find boundaries for mountains, valleys, and pattern recognition.
+
+✅ Key Properties of Monotonic Stack Problems
+
+✔ You need to compare each element with previous or next elements.
+✔ The problem involves peaks, plateaus, or boundaries.
+✔ The solution requires fast lookups or skipping unnecessary comparisons.
+✔ A brute-force approach is too slow, and scanning left/right is needed efficiently.
+
+✅ Examples of Problems in LeetCode/Interviews
+Problem	Type
+Next Greater Element I/II	NGE
+Largest Rectangle in Histogram	Area calculation
+Trapping Rain Water	Boundary problem
+Daily Temperatures	Time-based problem
+Stock Span	Historical comparison
+Sliding Window Maximum	Range max/min
+Remove Duplicate Letters	Order and uniqueness
+Building Sunset View	Geometric problem
+Valid Parentheses	Structural problem
+✅ Tips for Solving Monotonic Stack Problems
+
+Decide whether you need increasing or decreasing order.
+
+Loop through elements and use a stack to track indices or values.
+
+Compare the current element with the stack's top.
+
+Push or pop depending on the comparison result.
+
+Use the stack to compute the required result (area, next element, etc.).
+
+Always think about boundary cases (start, end, empty stack).
+
+✅ Final Summary
+
+A monotonic stack is a structured way to process sequences where local order matters. It's highly efficient in solving problems like:
+
+✔ Finding next/previous greater or smaller elements
+✔ Calculating areas in histograms
+✔ Finding patterns in data sequences
+✔ Optimizing brute-force comparison problems
+✔ Handling rainwater, stock prices, or temperature trends
+
+It’s a fundamental tool in algorithm interviews and real-world coding challenges.
+
+✅ Would you like:
+
+✔ Example implementations for each problem listed
+✔ Practice problems with solutions
+✔ A quiz to test your understanding of monotonic stacks
+✔ Visualization or diagrams explaining how stacks evolve during the algorithm?
+
+Let me know what you prefer next! 📚💡🚀📊
+
+Subsequence : A contigous/ non-contigous sequence which follows the order
+
+Note : Subarray can be a subsequence
+	
+	arr = [1,2,5]
+		{} empty set is also a subsequence
+		1
+		2
+		3
+		1,2
+		2,5
+		1,5
+		1,2,5

@@ -1,0 +1,106 @@
+redis
+
+Store data in ram in key value pair
+It is live a one gaint json object
+It is run on working memory of your computer called ram
+It is mostly used for caching
+Default port : 6379
+
+redis-server: to check redis is working
+
+redis-cli: to run the redis command after that add set key value pair
+Ex: set name kyle
+To get the value
+Ex: get name  =  "kyle"
+
+Whatever we are going to store in redis is going to be a type string by default
+Ex set age 26
+Ex get age = "26"
+
+For delete
+Ex del age
+Ex get age = (nil)
+
+To check key is exist
+Ex Exists name 
+true=1 false=0
+
+Check to find all Keys using that match a certain pattern
+Ex Keys * = all keys
+1) "name"
+
+To delete all keys
+Ex flushall
+
+Idea of expiration (ttl) time to live
+Ex ttl name
+if it is -1 then it has no expiration means it's going to forever
+
+When can key expire 
+Ex expire key seconds
+   expire name 30
+   now we do : ttl name it will give 30 and it will counting down
+   at last it will give -2 means it is not exist
+   
+Add key expire when we set it
+Ex: setex key seconds value
+    setex name 10 kyle
+    
+Redis also support handling arrays in the form of list and they also have hashes for kind of storing like Json object	
+
+for storing list
+If i want to add item on a list
+lpush  = add an item of the start of the list and l stands for left or start
+lpush key value
+Ex lpush friends john
+
+for get list
+lrange key start stop
+Ex lrange friends 0 -1  and -1 means get all the item in the list
+
+for add end of the list : use rpush
+
+take out element from the array: lpop and rpop
+lpop friends 
+
+
+sets
+add
+sadd key value
+get
+smembers key
+remove
+srem key value
+
+Hashes
+hashes cannot have hashes inside of hashes
+hset key field value
+Ex hset person name kyle
+
+Get 
+Ex hget person name
+
+To get everything about person
+Ex hgetall person
+
+Delete
+Ex hdel key field
+   hdel person age
+
+
+Exist
+Ex hexists person age = 0 (false)
+   hexist person name = 1 (true)
+   
+   
+backend
+import Redis from "redis"
+const DEFAULT_EXPIRATION = 3600;
+const client = Redis.createClient() // it is working on localhost so it is blank
+const client = Redis.createClient({url:}) // it is working on production so it is not blank
+await redisClient.connect();
+
+in api
+redisClient.setEx("genreList", DEFAULT_EXPIRATION, JSON.stringify({combinedResults, randomMovie}))
+
+

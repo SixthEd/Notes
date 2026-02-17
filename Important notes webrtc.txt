@@ -1,0 +1,13 @@
+Important notes
+webrtc works on https
+
+Scrollbars (Windows always shows them → reduces visible width)
+Display scaling (Windows 125% zoom vs. Ubuntu 100%)
+Default font rendering differences (affects height/width of elements)
+Fixed pixel sizes (not responsive → looks different on different screens)
+
+npm run build takes ram memory approx 502mb
+
+
+Default port : http = 80
+		https = 443

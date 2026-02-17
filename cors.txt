@@ -1,0 +1,36 @@
+Cors:
+Cross origin resourse sharing
+
+Origin: url
+
+Protocol: This specifies whether the resource is accessed via HTTP or HTTPS.
+Hostname: This is the domain name or IP address of the server (e.g., www.example.com).
+Port: This is the numerical identifier for the network port the server is listening on (e.g., 80 for HTTP, 443 for HTTPS).
+
+
+In browser terminology, the current browser URL is called the current origin and the third-party URL is cross-origin.
+
+Why is cross-origin resource sharing important?
+In the past, when internet technologies were still new, cross-site request forgery (CSRF) issues happened. These issues sent fake client requests from the victim's browser to another application.
+
+For example, the victim logged into their bank's application. Then they were tricked into loading an external website on a new browser tab. The external website then used the victim's cookie credentials and relayed data to the bank application while pretending to be the victim. Unauthorized users then had unintended access to the bank application.
+
+To prevent such CSRF issues, all browsers now implement the same-origin policy.
+
+The browser sends the preflight request before the actual request message. The server must respond to the preflight request with information about the cross-origin requests the server’s willing to accept from the client URL. The server response headers must include the following:
+
+Access-Control-Allow-Methods
+Access-Control-Allow-Headers
+Access-Control-Allow-Origin
+
+Cross-Origin Request is sending requests from one origin to another. CORS allows one server to say it only accepts connections coming from a whitelist of origins.
+
+Using the Bank example, if you are logged in to your bank, the bank sets up a cookie with your session information. This cookie gets sent to every request mybank.com so that they can identify you and check that your session is valid.
+
+If CORS was not there, if you went into a malicious site malicious.com, they could send a Cross-Origin request to mybank.com/transfer?amount=3000&dest=1234567890, the browser would put in the session cookie, and the bank would think that this is a legit operation because you're logged in.
+
+With CORS the bank can say "I only accept connections from the origin mybank.com". The browser will send a preflight check to get this configuration, and if the origin doesn't match, it will reject sending the request.
+
+CORS protects from more cases and other security vulnerabilities, which can effect even simple stuff such as loading an image (seems like it would never hurt, but it can do in contrived ways)
+
+LocalStorage is already done per-origin, and it is only accessible from JS running on that origin. CORS has nothing to do with that.

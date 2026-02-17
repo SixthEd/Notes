@@ -1,0 +1,271 @@
+React Questions
+
+1. Components
+
+	Resusable and independent part of code that defines the structure and behaviour of UI
+	
+	
+	Ex function functionName()
+	{
+		 const time = new Date(); // bad not recommend to use
+		 
+		state,
+		hooks use
+		return <div></div>
+	}
+	
+
+    Pure functions:
+    1. Don't access any outside variable or outside function
+    2. no modification in outside variable (should not give side effect)
+    3. return same value always
+
+    Idempotency
+    
+    Components must always return the same output with respect to their inputs – props, state, and context. This is known as idempotency. Idempotency is a term popularized in 	  
+    functional programming. It refers to the idea that you always get the same result every time you run that piece of code with the same inputs.
+    This means that all code that runs during render must also be idempotent in order for this rule to hold. For example, this line of code is not idempotent (and therefore, neither 
+    is the component):
+    
+2. State management:
+	
+	Local : using useState hook
+	Global : using ContextApi
+	Centralized : using useReducer
+	
+3. Controlled and UnControlled Component
+
+	Controlled components rely on React state to manage the form data, while uncontrolled components use the DOM itself to handle form data.
+	
+	Controlled components are form elements (like input, textarea, or select) that are managed by React state.
+	import React, { useState } from 'react';
+
+	function ControlledComponent() {
+	  const [value, setValue] = useState('');
+
+	  const handleChange = (event) => {
+	    setValue(event.target.value);
+	  };
+
+	  const handleSubmit = (event) => {
+	    event.preventDefault();
+	    alert('A name was submitted: ' + value);
+	  };
+
+	  return (
+	    <form onSubmit={handleSubmit}>
+	      <label>
+		Name:
+		<input type="text" value={value} onChange={handleChange} />
+	      </label>
+	      <button type="submit">Submit</button>
+	    </form>
+	  );
+	}
+
+	export default ControlledComponent;
+	
+	Uncontrolled:
+	Uncontrolled components in React manage their own state internally rather than relying on React state. This approach is useful for simple forms where you don't need to 	
+	manipulate the input data through React state updates.
+	
+	import React, { Component } from 'react';
+
+	class UncontrolledComponent extends Component {
+	  constructor(props) {
+	    super(props);
+	    // Create a ref to hold the input DOM element
+	    this.inputRef = React.createRef();
+	  }
+
+	  handleSubmit = () => {
+	    // Access the input value using the ref
+	    console.log(this.inputRef.current.value);
+	  }
+
+	  render() {
+	    return (
+	      <div>
+		{/* Use ref attribute to attach the ref to the input element */}
+		<input 
+		  type="text" 
+		  ref={this.inputRef} 
+		/>
+		<button onClick={this.handleSubmit}>Submit</button>
+	      </div>
+	    );
+	  }
+	}
+	
+4. Lifting state up:
+	What Does Lifting State Up Mean in React?
+	In React, lifting state up refers to the technique of moving a shared state to a common ancestor of the components that need to access or modify it. Instead of maintaining 	
+	separate state values in each component, the state is kept in the parent component. This parent component then passes the state and any necessary functions as props to its 
+	child components.
+
+	or
+
+Lifting the State Up in React
+
+	Lifting State Up is a pattern in React where you move the state from child
+	components to a common parent component so that multiple child components
+	can share and synchronize this state. This ensures that the state is managed at a
+	higher level in the component hierarchy, allowing data to flow down as props and
+	actions (such as events) to flow up.
+	
+	Use Case:
+
+	When you have two or more components that need to share the same state, you
+	should lift the state up to their nearest common ancestor. This allows these
+	components to stay in sync and ensures that the state is managed in a single place.
+
+	How to Lift State Up in React?
+	Lifting state up involves a few simple steps:
+	Identify the shared state: Determine which state values need to be accessed or modified by multiple components.
+	Move the state to the common ancestor: Find the nearest parent component that can hold the state.
+	Pass the state as props: The parent component will pass the shared state and any relevant handler functions (e.g., for updating the state) to its child components via props.
+	Handle state updates: The child components will use the passed-down functions to update the parent component’s state.
+	
+5. What is Prop Drilling and How to Avoid it?
+	
+	Prop drilling refers to the practice of passing data through several layers of nested components in React, even though intermediate components don't directly utilize this 	
+	data. This means that a middle component doesn't necessarily need the data, but it must still pass it down to the next component, creating an unnecessary and sometimes 	
+	lengthy chain of props.
+
+	import React from "react";
+
+	// Parent component that holds the message and passes it down
+	function Parent() {
+	    const message = "Hello from Parent";
+	    return (
+		<div>
+		    <Child message={message} />
+		</div>
+	    );
+	}
+
+	function Child({ message }) {
+	    return (
+		<div>
+		    <Grandchild message={message} />
+		</div>
+	    );
+	}
+
+	function Grandchild({ message }) {
+	    return (
+		<div>
+		    <p>Message: {message}</p>
+		</div>
+	    );
+	}
+
+	export default function App() {
+	    return (
+		<div>
+		    <Parent />
+		</div>
+	    );
+	}
+
+	Why Prop Drilling is Problematic?
+	
+	Prop drilling is problematic because:
+	Code Complexity: It makes the component tree overly complicated, as intermediate components receive and forward props without using them, cluttering your code and causing 
+	confusion.
+	Maintenance Overhead: Any change to the props requires updating multiple components, which can be time-consuming and error-prone.
+	Reduced Readability: It becomes difficult to trace how and where data flows through components, making debugging and development more challenging.
+	Tight Component Coupling: Components become less reusable and more tightly coupled, leading to reduced flexibility and difficulties in refactoring.
+	Scalability Issues: As your application grows, prop drilling worsens, leading to further complexity and making the app harder to scale effectively.
+	
+	How to Avoid Prop Drilling Problem?
+	Below are the some approaches which is used to avoid prop drilling:
+
+	1. Using Context API
+		The React Context API provides a way to share values (like state, functions, or constants) between components without explicitly passing props.
+
+		import React, { createContext, useContext } from 'react';
+		const UserContext = createContext();
+		const App = () => {
+		    const userName = 'geeksforgeeks';
+		    return (
+			<UserContext.Provider value={userName}>
+			    <Parent />
+			</UserContext.Provider>
+		    );
+		};
+		const Parent = () => {
+		    return <Child />;
+		};
+		const Child = () => {
+		    return <GrandChild />;
+		};
+		const GrandChild = () => {
+		    const userName = useContext(UserContext); // Access context value
+		    return <p>Hello, {userName}!</p>;
+		};
+		export default App;
+		Output
+
+		Hello geeksforgeeks!
+		In this example
+
+		createContext() creates a context (UserContext) to share data across components.
+		The App component uses UserContext.Provider to pass userName ('geeksforgeeks') as the context value.
+		ParentComponent and its children (ChildComponent, GrandChildComponent) are wrapped by the provider.
+		GrandChildComponent accesses the context value using useContext(UserContext).
+		The value ('geeksforgeeks') is displayed in a <p> tag as “Hello, geeksforgeeks!”.
+	
+	2. Using Custom Hooks
+		Custom hooks are reusable functions in React that encapsulate stateful logic, starting with use (e.g., useFetch). They improve code reusability, keep components 
+		clean, and allow sharing logic across components.
+
+
+		import React, { createContext, useContext } from "react";
+		const UserContext = createContext();
+		const useUser = () => { return useContext(UserContext); };
+		const App = () => {
+		    const userName = "GeeksforGeeks";
+
+		    return (
+			<UserContext.Provider value={userName}>
+			    <Component />
+			</UserContext.Provider>
+		    );
+		};
+		const Component = () => {
+		    return <Child />;
+		};
+		const Child = () => { return <Grand />; };
+		const Grand = () => {
+		    const userName = useUser();
+		    return <p>Hello, {userName}!</p>;
+		};
+		export default App;
+		Output
+
+		Hello, GeeksforGeeks!
+		
+Batching
+Batching is React’s optimization that combines multiple state updates into a single render to improve performance
+
+
+React queue all setStates and schedule them and once the function complete then it batch them
+or
+React queues all setState calls during the same execution context, then the Fiber scheduler schedules a single render after the function finishes, so all updates are batched into one commit.
+
+
+Fiber is the internal data structure that manages reconciliation, scheduling, and updates.
+
+Q5. Difference: useTransition vs startTransition
+Hook			Use
+startTransition		fire once
+useTransition		track pending state
+
+
+“React uses the Fiber tree during the commit phase to create and update the real DOM.”
+
+loadbalancing//
+
+if network connection breaks message will send?
+

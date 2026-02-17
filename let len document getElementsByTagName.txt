@@ -1,0 +1,83 @@
+let len =document.getElementsByTagName("tbody")[0].children.length;
+let numbers = [3,4,5];
+let obj = {}
+
+for(let i=0; i<len ; i++)
+    {
+         let list = []
+        if(document.getElementsByTagName("tbody")[0].children[i].children[numbers[0]])
+        {
+            continue;
+        }
+            for(let j=0 ;j<numbers.length; j++)
+            {
+                list.push(document.getElementsByTagName("tbody")[0].children[i].children[numbers[j]].innerText)
+            }
+            obj[document.getElementsByTagName("tbody")[0].children[i].children[0].innerText]= list;
+    }
+console.log(obj)
+
+
+
+****************************************************
+
+document = HTML page 
+
+window = current tab
+
+
+
+Data parsing means analyzing raw, often unstructured, information and converting it into a structured, readable format for computers or humans to use easily, essentially breaking down data into smaller, meaningful parts and organizing them into variables or a data structure like JSON or CSV
+
+let dateTime = Date.now();
+let time = new Date(dateTime);
+console.log(time.getHours()+1);
+
+
+window.location.path 
+window.location.search
+
+let params = new URLSearchParams();
+for(let [key,values] of params.entries()
+
+Fetch API:
+
+	fetch api return promise
+	res.json() => promise so we need parse the data 
+	
+	The fetch() function returns a Promise which is fulfilled with a Response object representing the server's response. You can then check the request status and extract the 	
+	body of the response in various formats, including text and JSON, by calling the appropriate method on the response.
+
+	or
+	
+	The res.json() method is used with the JavaScript Fetch API to parse the incoming response stream from a network request as JSON (JavaScript Object Notation) and convert it 
+	into a usable JavaScript object. 
+
+	How it Works
+	When you use the fetch() method, it returns a Promise that resolves to a Response object. This initial Response object contains metadata like headers and status codes, but 
+	the actual body of the response is a ReadableStream that has not yet been read or parsed. 
+	The res.json() method is an asynchronous operation that: 
+	Reads the entire response body stream to completion.
+	Parses the body text as JSON.
+	Returns a new Promise that, when resolved, provides the fully parsed JavaScript object. 
+	Because res.json() is asynchronous, you must use .then() chaining or the await keyword to access the final data. 
+	
+	
+	fetch("https://jsonplaceholder.typicode.com/todos/1").then((response)=> response.json()).then((data)=>console.log(data))
+
+	fetch("https://jsonplaceholder.typicode.com/todos/1",{
+	  method:"POST",
+	  body:JSON.stringify({name:"Rohan"}),
+	  headers:{
+	    "Content-type": "application/json"
+	  },
+	  credentials:"include",
+	  mode:"cors"
+	})
+	
+	
+	request headers: from client
+	response headers: from server
+	
+
+

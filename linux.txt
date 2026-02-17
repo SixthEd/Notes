@@ -1,0 +1,98 @@
+check the status is docker running or not:
+systemctl status docker
+run docker demon: 
+systemctl start docker
+
+ctrl r reverse seach on terminal
+check command history : history
+
+man command : give information of command
+$ add : for environment variable
+
+ps: list all process which are running (ps takeout the information from /proc directory)
+aux: command line parameter all user 
+grep: filter 
+
+ !! =  previous command
+ 
+ kill send signals
+ kill process id  
+ kill -9 process id= delete memory
+ pkill "brave": ex it will kill all the process which contain word in brave in it
+
+cat : read file
+| : output|input take output as input from the left and then for right give input
+echo "This is cool" > filename : overwrite the file content.
+echo "This is cool" >> filename : add in the last line.
+
+to run the shell command use : sh -c 
+
+ps -exo pid,cmd: -e Takes all processes being run on the system into account.
+	   x The x option in ps expands the output to include background processes and processes that are not associated with a specific terminal.
+	   o default output format
+	   cmd pid (process id) ,cmd (process name, arguments)
+	
+ps aux: - The a flag stands for 'all.' When used with ps, it lists processes from all users on the system.
+	- The u flag stands for 'user.' It provides detailed information about each process, including the user that owns the process.
+	- The x flag stands for 'extended.' It lists processes not attached to a terminal, such as system services.
+	
+ps -exo use for format 
+
+systemctl : Systemctl is the command-line tool that manages the systemd system and service manager in Linux. It lets users control and manage system services and units with commands
+            to start, stop, restart, and check their status.
+           
+sh -c : In Ubuntu, sh is usually symlinked to /bin/dash, meaning that if you execute a command with sh -c the dash shell will be used to execute the command instead of bash.
+        sh is the bourne shell. There are several shells, of which bourne is the old standard, installed on all unix systems, and generally the one you can guarantee will exist.
+        The shell is the command interpreter that takes your input, provides output back to the screen, to the correct files, etc, and provides all the basic built-in commands you 
+        need to manage jobs, kill, test expressions, etc.
+
+	sh: This invokes the Bourne shell (or a compatible shell).
+	-c: This option tells sh to read commands from the following string.
+
+bash : It is a shell that listen input from the terminal.  
+
+nano filename : Use to update file.
+
+pwd : (present working directory) Give the path of my current directory.
+
+vi : vim old terminal
+--rm: Automatically removes the container once it stops.
+
+In Ubuntu (or any Unix-like system), wq is a command used inside the vi or vim text editor to save and exit a file.
+vim filename.txt
+Press Esc to ensure you're in normal mode
+:wq and press Enter.
+w = write (save the file)
+q = quit (exit the editor)
+If you only want to quit without saving, use :q!.
+
+// ls -lah /dev/sdb*
+
+find . -name 'index.js'
+find . -not -path 'node_modules' -name 'index.js'
+
+sed -i 's;localhost;0.0.0.0;g' index.js
+
+diff command to check the changes between 2 files
+
+edit a file without using text-editor : sed -i 's/background-color: blue;/background-color: green;/' /usr/share/nginx/html/index.html
+
+ps aux --sort=-%mem | head : It will give you ram usable of ps
+
+\df : hard disk usage
+free -h : memory usage
+
+ls -a: ls: lists files and directories
+       -a: shows all files, including hidden files (those that start with a dot . like .git, .env, etc.)
+       
+find a file : find . -name "filename.txt"
+	      . = current directory
+	      
+	      
+sudo lsof -i :<port> : find the process working the port number 
+			sudo → Runs the command with root privileges (needed to see all processes)
+			lsof → Lists open files (sockets, pipes, etc. are treated as files in Linux)
+			-i → Filters network files, e.g., TCP/UDP sockets
+			:<port> → Filters for a specific port number
+
+To remove a package and its associated configuration files, use the apt purge or apt-get purge

@@ -1,0 +1,54 @@
+postgresql
+
+CREATE TABLE mylist (
+    movieid TEXT NOT NULL,
+    profile_id UUID NOT NULL,
+
+    logo TEXT,
+    background_image TEXT,
+    year INT,
+    title TEXT,
+    maturity_description TEXT,
+    specific_rating_reason TEXT,
+    tags TEXT[],
+    poster TEXT,
+    image TEXT,
+    video_id TEXT,
+    casting TEXT[],
+    genres TEXT[],
+    rating TEXT,
+    context TEXT,
+
+    PRIMARY KEY (movie_id, profile_id),
+
+    CONSTRAINT fk_profile
+        FOREIGN KEY (profile_id)
+        REFERENCES user_profiles(profile_id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE user_profiles (
+    profile_id UUID PRIMARY KEY,
+    account_id UUID NOT NULL,
+    name TEXT NOT NULL,
+    is_kid BOOLEAN DEFAULT FALSE,
+    language TEXT DEFAULT 'en',
+    avatar_url TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+
+    CONSTRAINT fk_account
+        FOREIGN KEY (account_id)
+        REFERENCES accounts (account_id)
+        ON DELETE CASCADE
+);
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE accounts (
+    account_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+	

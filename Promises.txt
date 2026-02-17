@@ -1,0 +1,19 @@
+One we to create promise by using new promise constructor
+
+An asynchronous task refers to an operation that can be executed without blocking the main thread of execution. This means that the program can continue to perform other operations while the asynchronous task is running in the background. Examples include network requests, file I/O, or database interactions. In JavaScript, asynchronous tasks are often handled using mechanisms like Promises or async/await.
+
+new Promise((resolve, reject)=>{
+	resolve("done")
+})
+
+this constructor also receives an executor function when the new promise constructor is executed a new promise object is created in memory and this object contains some internal
+slots
+Promise State
+Promise Result
+PromiseFullfillReaction
+PromiseRejectReaction
+PromiseIsHandled
+
+
+if promise resolve the state become fulfilled and promise result is the value we passed in resolve
+whenever we chained then it is responsible for creating that promise reaction method this promise reaction contains a handler 

