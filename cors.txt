@@ -34,3 +34,13 @@ With CORS the bank can say "I only accept connections from the origin mybank.com
 CORS protects from more cases and other security vulnerabilities, which can effect even simple stuff such as loading an image (seems like it would never hurt, but it can do in contrived ways)
 
 LocalStorage is already done per-origin, and it is only accessible from JS running on that origin. CORS has nothing to do with that.
+
+Access-Control-Allow-Credentials: true
+
+➡ Browser will:
+
+	Send cookies (if credentials: include)
+
+	Accept cookies from response
+
+	Allow frontend JS to read response

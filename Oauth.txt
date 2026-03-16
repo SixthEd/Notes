@@ -1,0 +1,32 @@
+Oauth
+
+1. Oauth: Open authorization
+2. Authorization framework
+3. Enable secure third party access to user protected data
+
+CSRF attack
+
+
+In OAuth Authorization Code Flow, the frontend initiates login, the backend redirects the browser to the authorization server, the user authenticates and grants consent, the authorization server returns an authorization code, and the backend exchanges that code for tokens and user information to establish a session.
+
+flow:
+
+	User clicks login
+		↓
+	Frontend calls backend
+		↓
+	Backend redirects browser to authorization server
+		↓
+	User authenticates and gives consent
+		↓
+	Authorization server redirects with authorization code
+		↓
+	Frontend sends code to backend
+		↓
+	Backend exchanges code for tokens
+		↓
+	Backend fetches user info
+		↓
+	Backend creates session
+		↓
+	User is logged in
