@@ -349,3 +349,7 @@ Content-Security-Policy		Blocks inline scripts
 X-XSS-Protection		Old browser XSS filter
 X-Frame-Options	Prevent		clickjacking
 X-Content-Type-Options		Prevent MIME sniffing
+
+
+Note:
+“Access tokens are usually stored on the client side and used for API requests, while refresh tokens are stored in httpOnly cookies for security. In JWT-based systems, the server does not store tokens but only verifies them.”

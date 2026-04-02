@@ -140,13 +140,13 @@ React LifeCycle
 
 		Browser DOM is updated
 
-		Phase 6: Effects Run
+	Phase 6: Effects Run
 
-	After DOM paint:
+		After DOM paint:
 
-	useEffect(() => {
-	  console.log("DOM ready");
-	}, []);
+		useEffect(() => {
+		  console.log("DOM ready");
+		}, []);
 
 
 	Runs after commit phase.

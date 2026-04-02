@@ -24,38 +24,40 @@ Map:
 	Keys can be of any data type, including objects, functions, or primitive values like numbers or booleans. This allows for more flexible and powerful key-value associations.
 
 2. Order of Insertion:
-Object:
-	The order of properties in an Object is not guaranteed to be preserved, especially in older JavaScript versions. While modern engines often maintain insertion order for 	
-	string keys, it's not a strict guarantee for all scenarios.
-Map:
-	Map objects strictly maintain the order of key-value pairs based on their insertion order, making them iterable in a predictable sequence.
+	Object:
+		The order of properties in an Object is not guaranteed to be preserved, especially in older JavaScript versions. While modern engines often maintain insertion order for 	
+		string keys, it's not a strict guarantee for all scenarios.
+	Map:
+		Map objects strictly maintain the order of key-value pairs based on their insertion order, making them iterable in a predictable sequence.
 
 3. Iteration:
-Object:
-	Iterating over an Object typically requires using for...in loops or methods like Object.keys(), Object.values(), or Object.entries().
-Map:
-	Map objects are directly iterable and provide built-in iteration methods like forEach(), for...of loops, and entries(), keys(), and values() methods for easier traversal.
+	Object:
+		Iterating over an Object typically requires using for...in loops or methods like Object.keys(), Object.values(), or Object.entries().
+	Map:
+		Map objects are directly iterable and provide built-in iteration methods like forEach(), for...of loops, and entries(), keys(), and values() methods for easier traversal.
 
 4. Size Property:
-Object:
-	Objects do not have a direct size property to get the number of key-value pairs. You would typically need to use Object.keys().length.
-Map:
-	Map objects have a size property that directly returns the number of elements in the map.
+	Object:
+		Objects do not have a direct size property to get the number of key-value pairs. You would typically need to use Object.keys().length.
+	Map:
+		Map objects have a size property that directly returns the number of elements in the map.
 
 5. Performance:
-Object:
-	For simple, fixed sets of string-based keys, Objects can be slightly faster for property access due to their underlying hash table implementation.
-Map:
-	Maps are generally optimized for frequent additions, deletions, and iterations, especially when dealing with a large number of entries or non-string keys.
+	Object:
+		For simple, fixed sets of string-based keys, Objects can be slightly faster for property access due to their underlying hash table implementation.
+	Map:
+		Maps are generally optimized for frequent additions, deletions, and iterations, especially when dealing with a large number of entries or non-string keys.
 
 6. Prototype Chain:
-Object:
-	Objects inherit properties from their prototype chain, which can lead to potential key collisions or unexpected behavior if not handled carefully (e.g., checking 	
-	hasOwnProperty).
-Map:
-	Maps do not have a prototype chain to worry about, making them safer and simpler to use for key-value storage without fear of inherited properties.
+	Object:
+		Objects inherit properties from their prototype chain, which can lead to potential key collisions or unexpected behavior if not handled carefully (e.g., checking 	
+		hasOwnProperty).
+	Map:
+		Maps do not have a prototype chain to worry about, making them safer and simpler to use for key-value storage without fear of inherited properties.
 
-In summary: Use Object for simple, fixed collections of data where keys are primarily strings or symbols and order is not critical. Use Map when you need flexible key types, guaranteed insertion order, built-in iteration methods, or when dealing with dynamic and potentially large collections of key-value pairs.
+In summary: 
+	Use Object for simple, fixed collections of data where keys are primarily strings or symbols and order is not critical. Use Map when you need flexible key types, guaranteed insertion order, built-in 		
+	iteration methods, or when dealing with dynamic and potentially large collections of key-value pairs.
 
 
 Edge cases:
@@ -445,7 +447,7 @@ Edge cases:
 		➡ this = button
 
 	1️⃣4️⃣ this in setTimeout / setInterval
-		Function Type	Value of this
+		Function Type		Value of this
 		Regular function	window / undefined
 		Arrow function		lexical
 	

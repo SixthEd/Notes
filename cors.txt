@@ -44,3 +44,23 @@ Access-Control-Allow-Credentials: true
 	Accept cookies from response
 
 	Allow frontend JS to read response
+	
+Browser sends a preflight (OPTIONS request) only if:
+
+	Method is NOT simple (PUT, DELETE, etc.)
+	OR custom headers are used (Authorization, etc.)
+	OR content-type is not simple (application/json, etc.)
+	
+
+	Browser sends request (even if cross-origin)
+	Server responds (with or without CORS headers)
+	Browser checks response headers
+	🔑 Important Rule
+
+	👉 If response has correct CORS headers:
+
+	✅ Browser allows frontend to read response
+
+	👉 If NOT:
+
+	❌ Browser blocks access to response
