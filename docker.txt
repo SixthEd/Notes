@@ -1,5 +1,16 @@
 Docker is a platform that allows developers to build, ship, and run applications within lightweight, portable containers
 
+Why do you need docker?
+	Compatibility/Dependency
+	Long setup time
+	Different Dev/Test/Prod environment (os)
+
+Docker allows us to run each component in a separate container with its own dependencies and its own libraries and all are in the same vm or os but in separate environment or containers.
+We just had to build the configuration once and all other developer could now started with a simple docker command.
+
+Containers: are completely isolated environments , as they have their own processes or services, network interface, their own mounts. 
+
+docker host (docker engine)
 
 docker command:
 1.run : docker run nginx 
@@ -178,6 +189,8 @@ Networking :  When we install docker, it will create 3 network automatically.
 	     			      Ex : find the networks : docker network ls
 	     			      Ex : Connect network with container : docker network connect n1 jovial_shamir
 	     			           				    or docker run -dit --name c1 --network n1 alpine sh
+	     			           				    or
+	     			           				    docker run -d --name frontend --network my-network -p 3000:80 algorithmVisualizer
 	     			           				    
 		Container can't access using ip address of containers because it it not guarantee they will get same ip address when system is reboot. Container can reach each-other 
                 using their names. Docker has a built in DNS server (containes container name and their ip address)that helps the containers to resolve each other using the container 		
@@ -295,3 +308,4 @@ docker push repo-name/myflix:latest : Pushes the tagged image to your registry.
 				      If repo-name includes a URL (like ghcr.io/user/myflix), it pushes to a private registry
 					   
 
+link : https://www.youtube.com/watch?v=fqMOX6JJhGo&t=61s
