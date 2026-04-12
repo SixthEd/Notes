@@ -872,3 +872,47 @@ Closures:
 
 
 fetch() initiates an HTTP request and resolves once response headers are received, returning a Response object whose body is a stream; res.json() asynchronously consumes that stream, parses it as JSON, and returns a Promise.
+
+
+Array Destructing:
+
+const [fName ,lName] = ["Rohan", "Kumar"]
+
+console.log(fName,lName)  Rohan Kumar
+
+Rest Parameter:
+
+The rest parameter allows a function to accept any number of arguments as an array.
+	
+	1. 	function sum(...numbers) {
+		    let total = 0;
+
+		    for (let num of numbers) {
+			total += num;
+		    }
+
+    		return total;
+		}
+
+		console.log(sum(1, 2, 3, 4)); // 10
+	
+	
+       2. 	function test(a, b, ...rest) {} // ✅
+		function test(...rest, a) {}    // ❌ error
+		
+		
+
+
+Reduce method:
+	let arr = [1, 2, 3, 4];
+
+	let sum = arr.reduce((acc, curr) => acc + curr, 0);
+
+	console.log(sum); // 10
+	
+	acc = 0
+
+	1st → acc = 0 + 1 = 1  
+	2nd → acc = 1 + 2 = 3  
+	3rd → acc = 3 + 3 = 6  
+	4th → acc = 6 + 4 = 10

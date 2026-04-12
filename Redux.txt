@@ -66,61 +66,61 @@ Redux : It is a state management library that allows you to have a global state
 
 async actions:
 
-first create async action
+	first create async action
 
-const addTodoAsync = createAsyncThunk(
-    "todo/addTodoAsync",
-    async(input)=>{
-        await new Promise((res)=> setTimeout(()=>res(),1000))
-        console.log("input",input)
-        return {input};
-    }
-)
+	const addTodoAsync = createAsyncThunk(
+	    "todo/addTodoAsync",
+	    async(input)=>{
+		await new Promise((res)=> setTimeout(()=>res(),1000))
+		console.log("input",input)
+		return {input};
+	    }
+	)
 
-after that to handle the reaction of this action send it to extraReducer 
+	after that to handle the reaction of this action send it to extraReducer 
 
- extraReducers: (builder)=>{
-        builder.addCase(addTodoAsync.pending, ()=>{
-            console.log("addTodoAsync Pending...")
-        }).addCase(addTodoAsync.fulfilled, (state,action)=>{
-            const todo = {id: nanoid(), text: action.payload.input};
-            state.todos.push(todo);
-        })
-    }
+	 extraReducers: (builder)=>{
+		builder.addCase(addTodoAsync.pending, ()=>{
+		    console.log("addTodoAsync Pending...")
+		}).addCase(addTodoAsync.fulfilled, (state,action)=>{
+		    const todo = {id: nanoid(), text: action.payload.input};
+		    state.todos.push(todo);
+		})
+	    }
     
 
 How Redux knows which reducer handles which action
-Short answer:
+	Short answer:
 
-Redux uses the type string inside the action.
+	Redux uses the type string inside the action.
 
-Every action looks like:
+	Every action looks like:
 
-	{
-	  type: "todo/add",
-	  payload: { input: "Learn Redux" }
-	}
+		{
+		  type: "todo/add",
+		  payload: { input: "Learn Redux" }
+		}
 
 
-	That type is the address of the reducer.
+		That type is the address of the reducer.
 
 1️⃣ Slice creates action types automatically
 
-Your slice:
+	Your slice:
 
-	const todoSlice = createSlice({
-	  name: "todo",
-	  reducers: {
-	    add: (state, action) => {},
-	    remove: (state, action) => {}
-	  }
-	});
+		const todoSlice = createSlice({
+		  name: "todo",
+		  reducers: {
+		    add: (state, action) => {},
+		    remove: (state, action) => {}
+		  }
+		});
 
 
-	Redux Toolkit generates:
+		Redux Toolkit generates:
 
-	"todo/add"
-	"todo/remove"
+		"todo/add"
+		"todo/remove"
 
 2️⃣ Store combines reducers
 	configureStore({
@@ -131,53 +131,53 @@ Your slice:
 	});
 
 
-Redux internally builds:
+	Redux internally builds:
 
-	rootReducer = combineReducers({
-	  todo: todoReducer,
-	  user: userReducer
-	});
+		rootReducer = combineReducers({
+		  todo: todoReducer,
+		  user: userReducer
+		});
 
 3️⃣ Dispatch flow
 	dispatch(add({ input: "JS" }));
 
 
-Becomes:
+	Becomes:
 
-	dispatch({
-	  type: "todo/add",
-	  payload: { input: "JS" }
-	});
-
-
-Redux now does:
-
-	rootReducer(state, action)
+		dispatch({
+		  type: "todo/add",
+		  payload: { input: "JS" }
+		});
 
 
-Which calls:
+	Redux now does:
 
-	todoReducer(state.todo, action)
-	userReducer(state.user, action)
+		rootReducer(state, action)
+
+
+	Which calls:
+
+		todoReducer(state.todo, action)
+		userReducer(state.user, action)
 
 4️⃣ Each reducer checks the action type
 
-Inside todoReducer:
+	Inside todoReducer:
 
-	switch(action.type) {
-	  case "todo/add":
-	    // run add reducer
-	    break;
-	  case "todo/remove":
-	    // run remove reducer
-	    break;
-	}
+		switch(action.type) {
+		  case "todo/add":
+		    // run add reducer
+		    break;
+		  case "todo/remove":
+		    // run remove reducer
+		    break;
+		}
 
 
-Redux Toolkit hides this switch for you.
+	Redux Toolkit hides this switch for you.
 
-	Only the matching reducer executes.
-	Others just return state unchanged.
+		Only the matching reducer executes.
+		Others just return state unchanged.
 
 5️⃣ Async thunk is the same
 	addTodoAsync.pending   → "todo/addTodoAsync/pending"
@@ -185,40 +185,40 @@ Redux Toolkit hides this switch for you.
 	addTodoAsync.rejected  → "todo/addTodoAsync/rejected"
 
 
-Your extraReducers listens to those exact types.
+	Your extraReducers listens to those exact types.
 
-🧠 Mental Model
-	dispatch(action)
-		↓
-	rootReducer
-	   ├── todoReducer ← matches type → runs
-	   └── userReducer ← no match → ignored
+	🧠 Mental Model
+		dispatch(action)
+			↓
+		rootReducer
+		   ├── todoReducer ← matches type → runs
+		   └── userReducer ← no match → ignored
 
 
-Redux doesn’t “search” — it routes by string keys.
+	Redux doesn’t “search” — it routes by string keys.
 
 🎯 One-liner
 
-Redux doesn’t know reducers by name.
-It matches them by the action.type string.
+	Redux doesn’t know reducers by name.
+	It matches them by the action.type string.
 
-That’s the entire routing system.
+	That’s the entire routing system.
 
-	dispatch(addTodoAsync)
-		↓
-	Redux dispatches: todo/addTodoAsync/pending
-		↓
-	extraReducers.pending runs
-		↓
-	Async function runs (setTimeout, API)
-		↓
-	Promise resolves
-		↓
-	Redux dispatches: todo/addTodoAsync/fulfilled
-		↓
-	extraReducers.fulfilled runs
-		↓
-	state updated
-		↓
-	React re-renders
+		dispatch(addTodoAsync)
+			↓
+		Redux dispatches: todo/addTodoAsync/pending
+			↓
+		extraReducers.pending runs
+			↓
+		Async function runs (setTimeout, API)
+			↓
+		Promise resolves
+			↓
+		Redux dispatches: todo/addTodoAsync/fulfilled
+			↓
+		extraReducers.fulfilled runs
+			↓
+		state updated
+			↓
+		React re-renders
 

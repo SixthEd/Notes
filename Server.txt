@@ -1,26 +1,26 @@
 Server:
-A server is a computer (or program) that:
-Listens for requests from clients and sends back responses.
+	A server is a computer (or program) that:
+	Listens for requests from clients and sends back responses.
 
 
-what will we get when we send the request https://google.com?
-What You Actually Get First
-1️⃣ First Response → HTML only
+	what will we get when we send the request https://google.com?
+	What You Actually Get First
+	1️⃣ First Response → HTML only
 
-Server responds:
+	Server responds:
 
-	HTTP/1.1 200 OK
-	Content-Type: text/html
+		HTTP/1.1 200 OK
+		Content-Type: text/html
 
-	<html>
-	  <link rel="stylesheet" href="/main.css">
-	  <script src="/app.js"></script>
-	</html>
+		<html>
+		  <link rel="stylesheet" href="/main.css">
+		  <script src="/app.js"></script>
+		</html>
 
 
 	So the first network response is only the HTML file.
 
-Then the Browser Does This
+	Then the Browser Does This
 2️⃣ Browser parses HTML
 
 	Finds:
@@ -41,18 +41,18 @@ Then the Browser Does This
 
 4️⃣ Server sends CSS, JS, images
 
-Each is a separate HTTP request/response.
+	Each is a separate HTTP request/response.
 
-Final Flow
-	google.com
-	   ↓
-	HTML
-	   ↓
-	CSS request
-	   ↓
-	JS request
-	   ↓
-	Image request
+	Final Flow
+		google.com
+		   ↓
+		HTML
+		   ↓
+		CSS request
+		   ↓
+		JS request
+		   ↓
+		Image request
 	
 	
 When we send a request to any URL, first DNS resolves the domain name into an IP address.

@@ -339,6 +339,18 @@ Memoization is an optimization technique in computer science where the results o
 		active = false;
 		};
 		}, [url]);
+		
+		
+	Because it handles things that are outside rendering, like:
+
+		API calls 🌐
+		timers ⏱️
+		DOM updates 🧱
+		subscriptions 🔁
+
+		These are called side effects
+	
+	It describes extra work after render
 
 3. Memo
   
@@ -715,3 +727,47 @@ Disadvantage:
 	Whenever the context value changes, ALL components that use that context re-render, even if they only use a small part.
 
 It solves the prop drilling problem.
+
+	✅ 1. Split Context (MOST COMMON & BEST)
+
+		👉 Instead of one big context:
+
+		<UserContext.Provider value={user}>
+		<ThemeContext.Provider value={theme}>
+		<CartContext.Provider value={cart}>
+
+		👉 Now:
+
+		only related components re-render ✅
+
+	✅ 2. Memoize context value
+		const value = useMemo(() => ({ user, theme }), [user, theme]);
+
+		👉 Prevents unnecessary re-renders due to new object reference
+
+		⚠️ But still not perfect (whole context updates together)
+
+	✅ 3. Use selector pattern (ADVANCED)
+
+		Libraries like:
+
+		use-context-selector
+
+		👉 Let you do:
+
+		const user = useContextSelector(Context, v => v.user);
+
+		👉 Only re-renders if user changes ✅
+
+	✅ 4. Use state libraries (BEST for large apps)
+
+		👉 Instead of Context, use:
+
+		Redux Toolkit
+		Zustand 🔥 (very popular now)
+		Recoil
+
+		👉 They support:
+
+		selective subscriptions
+		minimal re-renders
