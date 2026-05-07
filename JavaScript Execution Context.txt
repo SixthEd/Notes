@@ -39,3 +39,6 @@ environment record this manage the identifiers binding for the parameter variabl
 environment of the function object in this case global environment record
 From the start to the declaration zone is called  firstname temporal dead zone 
 var variable are intialized undefined  in global object record redefined with the actual value during the execution phase 	 callStack 
+
+
+Source: https://www.youtube.com/watch?v=zdGfo6I1yrA

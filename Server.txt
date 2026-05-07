@@ -139,4 +139,23 @@ FTP		File transfer
 SMTP		Email sending
 DNS		Domain → IP lookup
 
+UDP and TCP in networking:
 
+UDP (User Datagram Protocol)
+Data packets are sent without checking whether:
+
+they arrived,
+they arrived in the correct order,
+some packets were lost.
+
+So packets may arrive out of order, or some may never arrive.
+
+TCP (Transmission Control Protocol)
+TCP ensures:
+packets are delivered,
+packets are delivered in the correct order,
+lost packets are retransmitted.
+
+So you can say:
+
+UDP does not guarantee delivery or packet order, while TCP checks both—whether data arrived and whether it arrived in the correct order.

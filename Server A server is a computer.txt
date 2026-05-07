@@ -18,6 +18,7 @@ It can:
 	Or pass it to the next handler
 	
 Types of middleware
+
 1. Application-level
 	app.use(express.json());
 

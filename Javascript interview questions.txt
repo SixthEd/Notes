@@ -916,3 +916,11 @@ Reduce method:
 	2nd → acc = 1 + 2 = 3  
 	3rd → acc = 3 + 3 = 6  
 	4th → acc = 6 + 4 = 10
+	
+Asynchronous tasks are tasks that run independently without blocking the execution of the main program.
+
+In JavaScript, asynchronous tasks are operations that run independently of the main execution flow, allowing the program to continue running without waiting for those operations to complete. When the async task finishes, its result is handled later through callbacks, promises, or async/await. 
+
+task queue handle webApi callbacks and event handler
+when the async task complete callback go into the task queue
+setTimeOut is also a webapi register callback and delay with the timer api 

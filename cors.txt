@@ -64,3 +64,68 @@ Browser sends a preflight (OPTIONS request) only if:
 	👉 If NOT:
 
 	❌ Browser blocks access to response
+	
+1. Normal cross-origin request (No preflight)
+
+	When JavaScript from one origin makes a request to another origin:
+
+	JS → Browser → Server
+
+	Browser adds:
+
+	Origin: https://frontend.com
+
+	Server sends back the response with CORS headers like:
+
+	Access-Control-Allow-Origin: https://frontend.com
+
+	Then browser checks:
+
+	Request origin = https://frontend.com
+	Server allowed origin = https://frontend.com
+
+	If allowed:
+
+	Browser gives response to JavaScript
+
+	If not:
+
+	Browser blocks JavaScript from reading the response
+
+2. Preflight case (custom headers, PUT, DELETE, etc.)
+
+	If request uses:
+
+	Custom headers
+		Authorization
+		application/json
+		PUT, PATCH, DELETE, etc.
+
+	Then browser does not send the real request first.
+
+	Flow:
+
+	Browser sends OPTIONS (preflight)
+		↓
+	Server replies with CORS rules
+		↓
+	Browser checks rules
+
+	If allowed:
+
+	Browser sends actual request
+		↓
+	Server sends actual response
+		↓
+	Browser gives response to JS
+
+	If not allowed:
+
+	Browser blocks request
+
+	and the actual request is never sent.
+
+	So your statement is correct:
+
+	In preflight, browser first checks permission.
+	In normal cross-origin requests, browser checks CORS headers on the actual response.

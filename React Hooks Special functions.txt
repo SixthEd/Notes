@@ -459,8 +459,14 @@ UseState:
 Note:
 	In react , functions are different on every render by default means func === func give false
 	useCallback memoize function from the previous render
+	
 	or
+	
 	“useCallback returns the same function reference from the previous render as long as its dependencies don’t change, preventing unnecessary re-renders and effect executions.”
+	
+	or
+	
+	useCallback is a React hook that memoizes a function and returns the same function reference between renders, until one of its dependencies changes.
 	
 	useCallback + memo is important
 	memo compare prev props with new if it it different the re-render the child component
@@ -559,9 +565,16 @@ Note:
 
 5 useMemo
 	same as useCallback but it memoize the previous value from previous render.
+	or
+	
+	useMemo is similar to useCallback, but instead of memoizing a function reference, it memoizes a computed value from the previous render and returns the cached value until its dependencies change.
 	
 	or
 	useMemo is used to memoize expensive computations or stabilize object references so they are recomputed only when their dependencies change.
+	
+	or
+	
+	useMemo is a React hook that memoizes a computed value and returns the cached value from the previous render unless its dependencies change.
 	
 	useMemo runs during render
 	Dependencies compared using Object.is
