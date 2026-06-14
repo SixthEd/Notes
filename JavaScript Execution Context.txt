@@ -1,6 +1,7 @@
 JavaScript Execution Context
 
-When we load a script or invoke a function a new execution Context is created and pushed onto the callStack (stack)
+When we load a script or invoke a function a new execution Context is creat
+ed and pushed onto the callStack (stack)
 
 What is execution context define the environment in which code is executed it contains many internal component that engines uses to keep track of the execution flow of the piece of 
 code
@@ -40,5 +41,9 @@ environment of the function object in this case global environment record
 From the start to the declaration zone is called  firstname temporal dead zone 
 var variable are intialized undefined  in global object record redefined with the actual value during the execution phase 	 callStack 
 
+
+Hoisting is the process that occurs during the creation phase of an execution context, where JavaScript creates identifier bindings for variables and declarations before code execution begins. For let, const, and class, the bindings are created (memory is set up), but they remain uninitialized until their declaration is executed.
+
+The Temporal Dead Zone (TDZ) is the period between the creation of a let, const, or class binding and the execution of its declaration that initializes the binding.
 
 Source: https://www.youtube.com/watch?v=zdGfo6I1yrA

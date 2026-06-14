@@ -1,16 +1,88 @@
 Docker is a platform that allows developers to build, ship, and run applications within lightweight, portable containers
 
 Why do you need docker?
-	Compatibility/Dependency
-	Long setup time
+	Compatibility/Dependency:
+	
+		Suppose we are building an application that consists of multiple services, such as a Node.js server, a database, and Redis for messaging.
+	
+		Before deploying the application, we need to ensure that the versions of all these services are compatible with the operating system. Sometimes a particular service version may not be supported on a
+		specific OS, forcing us to switch to a different operating system or modify our setup.
+
+		Secondly we have to check the compatibility between services and libraries and dependency on the OS. There are times when certain services require different version of dependency and library.
+		or
+		We need to ensure that the service is compatible with the required libraries, dependencies, and operating system packages.
+
+		The architecture of our application changed overtime , we have to upgrade newer verison of these component, or change the database. And everytime something changes, we need to go through same
+		process of checking  compatibility between these components and os and its dependency and libraries
+
+	Long setup time:
+	
+		Every time a new developer joins the team, setting up the development environment can be a challenging and time-consuming process. The developer must follow extensive documentation and execute many
+		commands to configure their machine. We need to ensure that they are using the correct operating system, the correct OS version, and the appropriate versions of all required services, libraries, and
+		dependencies. Since every developer must perform this setup individually, inconsistencies often arise between development environments.
+	
 	Different Dev/Test/Prod environment (os)
 
+		We also have different development environments. One developer may be comfortable working on Windows, while another may prefer Linux or macOS. As a result, it is difficult to guarantee that the 
+		application will run and behave consistently across all machines. Differences in operating systems, configurations, libraries, and dependencies can cause the application to work correctly on one 
+		machine but fail on another. Docker helps solve this problem by providing a consistent and isolated environment for every developer.
+	
+	So I need something that help us with the compatibility issue. And something that allow us to modify or change these component without affecting other components and even modifying the underlying OS as
+	required
+	
 Docker allows us to run each component in a separate container with its own dependencies and its own libraries and all are in the same vm or os but in separate environment or containers.
 We just had to build the configuration once and all other developer could now started with a simple docker command.
 
 Containers: are completely isolated environments , as they have their own processes or services, network interface, their own mounts. 
 
+Containers can be based on different Linux distributions (Ubuntu, Fedora, Alpine, etc.), but they all share the same host Linux kernel
+
+
+									VIRTUAL MACHINES
+								══════════════════════════════════════════════
+									VM                        VM
+								┌─────────────────────┐    ┌─────────────────────┐
+								│    Application      │    │    Application      │
+								├─────────────────────┤    ├─────────────────────┤
+								│  Libraries + Deps   │    │  Libraries + Deps   │
+								├─────────────────────┤    ├─────────────────────┤
+								│    Guest OS         │    │    Guest OS         │                   
+								└─────────────────────┘    └─────────────────────┘
+
+								══════════════════════════════════════════════
+										Hypervisor
+								══════════════════════════════════════════════
+										 Host OS
+								══════════════════════════════════════════════
+										Hardware
+								══════════════════════════════════════════════
+
+
+									CONTAINERS
+								══════════════════════════════════════════════
+
+								┌─────────────────────┐    ┌─────────────────────┐
+								│    Application      │    │    Application      │
+								├─────────────────────┤    ├─────────────────────┤
+								│  Libraries + Deps   │    │  Libraries + Deps   │
+								└─────────────────────┘    └─────────────────────┘
+
+								══════════════════════════════════════════════
+									      Docker Engine
+								══════════════════════════════════════════════
+									     Host OS (Linux)
+								══════════════════════════════════════════════
+									    Linux Kernel
+								══════════════════════════════════════════════
+									       Hardware
+								══════════════════════════════════════════════
+
+
 docker host (docker engine)
+
+Docker image: Are template or blueprint . It is use to create one or more containers.
+
+Containers are running instances of images that are isolated have their own environment and set of processes	
 
 docker command:
 1.run : docker run nginx 
@@ -309,3 +381,9 @@ docker push repo-name/myflix:latest : Pushes the tagged image to your registry.
 					   
 
 link : https://www.youtube.com/watch?v=fqMOX6JJhGo&t=61s
+
+docker exec -it name bash
+docker exec perform command on inside the running container
+-i is used to enable interactive mode by keeping STDIN open, allowing the container to accept input from the user.
+-t is used to allocate a pseudo-terminal (TTY), providing a terminal interface.
+bash starts a Bash shell inside the container, allowing us to execute commands and perform operations.

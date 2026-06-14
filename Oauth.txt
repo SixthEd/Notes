@@ -1,5 +1,9 @@
 Oauth
 
+OAuth 2.0 is an authorization framework that enables users to grant an application access to their data from a third-party provider,
+
+using this application do not need create authentication, and not create new login password again
+
 1. Oauth: Open authorization
 2. Authorization framework
 3. Enable secure third party access to user protected data
@@ -7,7 +11,13 @@ Oauth
 CSRF attack
 
 
+client secret secure in the backend stored in env
+
 In OAuth Authorization Code Flow, the frontend initiates login, the backend redirects the browser to the authorization server, the user authenticates and grants consent, the authorization server returns an authorization code, and the backend exchanges that code for tokens and user information to establish a session.
+
+or
+
+First, we create a Client ID and Client Secret in Google Cloud. When the user clicks "Login with Google", the frontend redirects the user to Google's authorization server using the Client ID. After the user logs in and grants permission, Google redirects back with an authorization code. The backend then exchanges this code for tokens by sending the code, Client ID, and Client Secret to Google. After verifying the returned token, the backend creates its own JWT and uses it for authentication within the application.
 
 flow:
 
@@ -30,3 +40,22 @@ flow:
 	Backend creates session
 		↓
 	User is logged in
+	
+	
+Pkce 
+Proof code for key exchange
+
+If we create a mobile app or SPA (single page application) who does not has backend and we want to login using oauth then someone can do Man in the middle attack and can stole your secret key.
+
+Before PKCE we send the login request with client id  but here we create a random password with each request this random password is called (code verifier) then we hashed it we called it (code challenge)
+then this code_challenge is send with the client id and send which algorithm are you using for code_challenge. Now google send back consent form if user allows it then google backend store the code + code_challenge + algo and send back the code . Now for the token we send back code+ code_verifier to the google backend .Google check the code in the backend and convert the code_verifier using sha256 algo to hash it and compare with already stored code_challenge if both are same then it will generate and return back the access token.
+Now for each code a new verifier is create but without pkce secret remain same so we can create as many token 
+
+	client_id&code_challenge&sha256
+
+	code_verifier = randomPassword
+	code_challenge = sha256(code_verifier)  sha256 is hashing technique
+	
+
+	
+source: https://www.youtube.com/watch?v=hpryVn8LT4E&t=1303s

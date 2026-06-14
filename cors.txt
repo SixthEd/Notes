@@ -1,12 +1,19 @@
 Cors:
 Cross origin resourse sharing
 
-Origin: url
+Origin: Protocol + host + Port
 
 Protocol: This specifies whether the resource is accessed via HTTP or HTTPS.
 Hostname: This is the domain name or IP address of the server (e.g., www.example.com).
 Port: This is the numerical identifier for the network port the server is listening on (e.g., 80 for HTTP, 443 for HTTPS).
 
+An origin is defined by the protocol, host, and port. If a request is sent to a resource with the same protocol, host, and port as the page that initiated the request, it is called a same-origin request. If the request is sent to a different origin (different protocol, host, or port), it is called a cross-origin request.
+
+Cross-origin means that two resources have different origins.
+
+Cross-origin means that the requesting origin and the target origin differ in protocol, host, or port.
+
+If the origin of the request is different from the origin of the resource receiving the request, then it is a cross-origin request.
 
 In browser terminology, the current browser URL is called the current origin and the third-party URL is cross-origin.
 
