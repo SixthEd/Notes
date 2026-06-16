@@ -88,7 +88,8 @@ Where stored?
 	
 SESSION
 What is it?
-
+	Session is server-side storage linked via a session ID stored in a cookie on the client
+	or
 	Session is server-side storage.
 	Browser stores only a session ID cookie.
 

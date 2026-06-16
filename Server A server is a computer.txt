@@ -191,6 +191,8 @@ Access Token
 	Contains user info (like userId) in the payload.
 
 	Signed with your secret key.
+	
+	Send everytime with each request.
 
 Refresh Token
 
@@ -201,6 +203,8 @@ Refresh Token
 	Can also be signed with the same secret or a different one.
 
 	Usually stored securely (HTTP-only cookie or DB).
+	
+	Use to generate Access Token.
 
 Secret Key
 

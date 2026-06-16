@@ -45,5 +45,7 @@ var variable are intialized undefined  in global object record redefined with th
 Hoisting is the process that occurs during the creation phase of an execution context, where JavaScript creates identifier bindings for variables and declarations before code execution begins. For let, const, and class, the bindings are created (memory is set up), but they remain uninitialized until their declaration is executed.
 
 The Temporal Dead Zone (TDZ) is the period between the creation of a let, const, or class binding and the execution of its declaration that initializes the binding.
+or
+TDZ is the period between the creation of a lexical binding and its initialization during code execution. During this period, accessing the binding throws a ReferenceError.
 
 Source: https://www.youtube.com/watch?v=zdGfo6I1yrA

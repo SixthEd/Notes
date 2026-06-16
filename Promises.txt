@@ -1,3 +1,9 @@
+A Promise is an object that represents the success or failure of an operation and its resulting value.
+or
+A Promise is an object that represents the eventual completion or failure of an operation and its resulting value. It is commonly used with asynchronous operations, but it can also represent the result of synchronous operations.
+
+async/await is syntax built on top of Promises that makes asynchronous code look like synchronous code.
+
 One we to create promise by using new promise constructor
 
 An asynchronous task refers to an operation that can be executed without blocking the main thread of execution. This means that the program can continue to perform other operations while the asynchronous task is running in the background. Examples include network requests, file I/O, or database interactions. In JavaScript, asynchronous tasks are often handled using mechanisms like Promises or async/await.
@@ -17,3 +23,168 @@ PromiseIsHandled
 
 if promise resolve the state become fulfilled and promise result is the value we passed in resolve
 whenever we chained then it is responsible for creating that promise reaction method this promise reaction contains a handler 
+
+
+	
+┌────────────────────────────────────────────┐
+│                 Source Code                │
+├────────────────────────────────────────────┤
+│                                            │                  
+│ new Promise((resolve, reject) => {         │
+│     resolve("Done!")                       │
+│ })                                         │
+│                                            │                  ┌──────────────────────────────────────────────────────────┐
+└────────────────────────────────────────────┘			│                     Promise Object                       │
+								├──────────────────────────────────────────────────────────┤
+								│                                                          │
+								│ [[PromiseState]]                                         │
+								│ ┌──────────────────────────────────────────────────────┐ │
+								│ │                   "fulfilled"                        │ │
+								│ └──────────────────────────────────────────────────────┘ │
+								│                                                          │
+								│ [[PromiseResult]]                                        │
+								│ ┌──────────────────────────────────────────────────────┐ │
+								│ │                     "Done!"                          │ │
+								│ └──────────────────────────────────────────────────────┘ │
+								│                                                          │
+								│ [[PromiseFulfillReactions]]                              │
+								│ ┌──────────────────────────────────────────────────────┐ │
+								│ │                      Empty                           │ │
+								│ └──────────────────────────────────────────────────────┘ │
+								│                                                          │
+								│ [[PromiseRejectReactions]]                               │
+								│ ┌──────────────────────────────────────────────────────┐ │
+								│ │                      Empty                           │ │
+								│ └──────────────────────────────────────────────────────┘ │
+								│                                                          │
+								│ [[PromiseIsHandled]]                                     │
+								│ ┌──────────────────────────────────────────────────────┐ │
+								│ │                      false                           │ │
+								│ └──────────────────────────────────────────────────────┘ │
+								│                                                          │
+								└──────────────────────────────────────────────────────────┘
+
+
+┌────────────────────────────────────────────┐
+│                 Source Code                │
+├────────────────────────────────────────────┤
+│                                            │                  
+│ new Promise((resolve, reject) => {         │
+│     resolve("Fail!")                       │
+│ })                                         │
+│                                            │                  ┌──────────────────────────────────────────────────────────┐
+└────────────────────────────────────────────┘			│                     Promise Object                       │
+								├──────────────────────────────────────────────────────────┤
+								│                                                          │
+								│ [[PromiseState]]                                         │
+								│ ┌──────────────────────────────────────────────────────┐ │
+								│ │                   "Rejected"                         │ │
+								│ └──────────────────────────────────────────────────────┘ │
+								│                                                          │
+								│ [[PromiseResult]]                                        │
+								│ ┌──────────────────────────────────────────────────────┐ │
+								│ │                     "Fail!"                          │ │
+								│ └──────────────────────────────────────────────────────┘ │
+								│                                                          │
+								│ [[PromiseFulfillReactions]]                              │
+								│ ┌──────────────────────────────────────────────────────┐ │
+								│ │                      Empty                           │ │
+								│ └──────────────────────────────────────────────────────┘ │
+								│                                                          │
+								│ [[PromiseRejectReactions]]                               │
+								│ ┌──────────────────────────────────────────────────────┐ │
+								│ │                      Empty                           │ │
+								│ └──────────────────────────────────────────────────────┘ │
+								│                                                          │
+								│ [[PromiseIsHandled]]                                     │
+								│ ┌──────────────────────────────────────────────────────┐ │
+								│ │                      false                           │ │
+								│ └──────────────────────────────────────────────────────┘ │
+								│                                                          │
+								└──────────────────────────────────────────────────────────┘
+								
+
+
+Example
+
+	async function f1()
+	{
+		    
+	}
+
+	console.log(f1()) 
+
+
+o/p:	Promise { undefined }
+
+
+
+Example
+	async function f1()
+	{
+	    await Promise.resolve()
+	}
+
+	console.log(f1())
+	
+o/p    Promise {pending}
+
+
+
+Example
+	async function f1() {
+	    return "Hello";
+	}
+	console.log(f1())
+
+o/p  Promise { 'Hello' }
+
+
+In a Promise chain, only the first catch() that handles the error runs, unless it throws another error.
+
+
+Promise.allSettle() always run if a promise fullfilled or not 
+
+Yes, even if all promises fail, Promise.allSettled() still resolves and its .then() runs.
+It waits for all promises to settle and then resolves with their statuses.
+
+
+		const p1 = Promise.reject("Error 1");
+		const p2 = Promise.reject("Error 2");
+		const p3 = Promise.reject("Error 3");
+
+		Promise.allSettled([p1, p2, p3])
+		  .then(results => {
+		    console.log("then runs");
+		    console.log(results);
+		  })
+		  .catch(err => {
+		    console.log("catch runs");
+		  });
+
+o/p:
+		[
+			  { status: "fulfilled", value: "Success" },
+			  { status: "rejected", reason: "Failed" },
+			  { status: "fulfilled", value: "Done" }
+		]
+
+
+Promise.all():
+
+Promise.all() waits for all promises and returns their results in an array. If one of the promise is rejected then whole process is reject and return only reject one.
+
+Promise.any() :
+
+Promise.any() returns the first fulfilled (successful) Promise.
+It ignores rejected promises unless all promises reject.
+
+Promise.race() :
+Promise.race() returns the result of the first Promise that settles.
+
+
+  
+Promise.all([])	Resolves with []
+Promise.allSettled([])	Resolves with []
+Promise.any([])	Rejects with AggregateError
+Promise.race([])	Promise Pending forever

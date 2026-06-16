@@ -23,5 +23,73 @@
       
       We can also promisify our webapi 
       
-      
+  Webapi callbacks and eventHandler first register in webApi then goes task queue     
+  
+  Evenloop responsibility to check the callstack is empty if that's case if nothing is running then gets the first available task from the task queue and moves it's to the callstack 
+	
 
+						┌──────────────────────────────────────────────────────────────────────────────┐
+						│                           JAVASCRIPT RUNTIME                                 │
+						└──────────────────────────────────────────────────────────────────────────────┘
+
+						┌──────────────────────────────┐      ┌──────────────────────────────────────┐
+						│      JavaScript Engine       │      │               Web APIs               │
+						├──────────────────────────────┤      ├──────────────────────────────────────┤
+						│                              │      │  fetch()                             │
+						│  ┌────────────────────────┐  │      │  setTimeout()                        │
+						│  │         Heap           │  │      │  setInterval()                       │
+						│  │                        │  │      │  localStorage                        │
+						│  │                        │  │      │  sessionStorage                      │
+						│  └────────────────────────┘  │      │  document                            │
+						│                              │      │  XMLHttpRequest                      │
+						│  ┌────────────────────────┐  │      │  indexedDB                           │
+						│  │      Call Stack        │  │      │  URL                                 │
+						│  │                        │  │      └──────────────────────────────────────┘
+						│  │                        │  │
+						│  │                        │  │      
+						│  └────────────────────────┘  │     
+						│                              │      
+						└──────────────────────────────┘      
+										    
+						┌──────────────────┐ 		      ┌──────────────────────────────────────┐
+						|                  |                  │             Task Queue               │
+						|                  |                  ├──────────────────────────────────────┤
+						|                  |                  │ setTimeout callbacks                 │
+						|                  |                  │ setInterval callbacks                │
+						|                  |                  │ DOM Events                           │
+						|                  |                  │ Message Events                       │
+						|                  |                  └──────────────────────────────────────┘
+						│    Event Loop    │
+						│                  │               ┌──────────────────────────────────────┐
+						│        ↻         │               │          Microtask Queue             │
+						└──────────────────┘               ├──────────────────────────────────────┤
+										   │ Promise.then()                       │
+										   │ Promise.catch()                      │
+										   │ Promise.finally()                    │
+										   │ queueMicrotask()                     │
+										   │ MutationObserver                     │
+										   └──────────────────────────────────────┘
+										   
+										   
+										   
+										                    Async Operation
+													 │
+													 ▼
+												    Web APIs
+													 │
+											   ┌─────────────┴─────────────┐
+											   │                           │
+											   ▼                           ▼
+										    Task Queue                 Microtask Queue
+										(setTimeout, DOM)              (Promises)
+
+											   └─────────────┬─────────────┘
+													 ▼
+												    Event Loop
+													 │
+												 Call Stack Empty?
+													 │
+													 ▼
+												 Microtasks First
+													 ▼
+												    Then Tasks
