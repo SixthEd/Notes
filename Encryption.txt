@@ -365,3 +365,9 @@ Whenever data enters your backend, ask:
 	URL? → Validate protocol
 	Auth system? → Validate format
 	API? → Validate schema
+
+Add accessToken with axios interceptors
+axios.interceptors.request.use((config) => {
+  config.headers.Authorization = `Bearer ${accessToken}`;
+  return config;
+});

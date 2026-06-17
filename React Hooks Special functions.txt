@@ -186,27 +186,32 @@ React LifeCycle
 	first time component mount
 	
 		Component mounts
-			↓
+		      ↓
 		Component function runs
-			↓
-		JSX → React Elements (Virtual DOM description)
-			↓
-		Reconciliation starts
-			↓
-		Fiber tree is created from React Elements
-			↓
-		Render phase builds work tree (no DOM yet)
-			↓
-		Commit phase:
-		   → Create real DOM nodes
-		   → Attach refs
-		   → Apply props
-			↓
-		useLayoutEffect runs
-			↓
-		Browser paints
-			↓
-		useEffect runs
+		      ↓
+		JSX → React Elements
+		      ↓
+		Render/Reconciliation Phase
+		      ↓
+		Create Fiber Tree
+		      ↓
+		Build Work-in-Progress Tree
+		      ↓
+		No previous Fiber Tree exists, so all nodes are marked for insertion
+		      ↓
+		Commit Phase
+		      ↓
+		Create and insert Real DOM nodes
+		      ↓
+		Apply props
+		      ↓
+		Attach refs
+		      ↓
+		useLayoutEffect
+		      ↓
+		Browser Paint
+		      ↓
+		useEffect
 
 
 
@@ -630,6 +635,47 @@ Note:
 	React compares state
 		↓
 	Re-render if changed
+
+Example
+	import { useReducer } from "react";
+
+	function reducer(state, action) {
+	  switch (action.type) {
+	    case "increment":
+	      return { count: state.count + 1 };
+
+	    case "decrement":
+	      return { count: state.count - 1 };
+
+	    case "reset":
+	      return { count: 0 };
+
+	    default:
+	      return state;
+	  }
+	}
+
+	export default function App() {
+	  const [state, dispatch] = useReducer(reducer, { count: 0 });
+
+	  return (
+	    <div>
+	      <h1>{state.count}</h1>
+
+	      <button onClick={() => dispatch({ type: "increment" })}>
+		+
+	      </button>
+
+	      <button onClick={() => dispatch({ type: "decrement" })}>
+		-
+	      </button>
+
+	      <button onClick={() => dispatch({ type: "reset" })}>
+		Reset
+	      </button>
+	    </div>
+	  );
+	}
 
 7. useTransition:
 	

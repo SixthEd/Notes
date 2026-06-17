@@ -1,0 +1,37 @@
+React
+
+UseState:
+UseState is a React Hook that allows functional components to hold, update, and preserve data (state) across renders, triggering a re-render when the state changes.
+
+UseEffect:
+UseEffect is a React Hook used to perform side effects in function components after rendering.
+
+UseCallback:
+UseCallback returns the same function reference from the previous render as long as its dependencies don’t change, preventing unnecessary re-renders and effect executions.
+ 
+Memo:
+Memo lets you skip re-rendering a component when its props are unchanged.
+
+UseMemo:
+UseMemo is similar to useCallback, but instead of memoizing a function reference, it memoizes a computed value from the previous render and returns the cached value until its dependencies change.
+
+UseRef:
+useRef is a React Hook that lets you reference a value that’s not needed for rendering.
+
+UseReducer:
+UseReducer is a React Hook used for managing complex state logic using a reducer function.
+
+UseTransition:
+useTransition lets you mark some state updates as non-urgent, so React keeps the UI responsive while doing heavy work.
+
+UseContext:
+useContext lets a component read data from a Context that is provided by a parent component — without passing props through every level.
+
+Controlled Component: 
+A form element whose value is managed by React state and updated through React.
+
+Uncontrolled Component: 
+A form element whose value is managed by the DOM itself, and React accesses the value using refs when needed.
+
+Lifting State Up
+Lifting State Up is a pattern in React where you move the state from child components to a common parent component so that multiple child components can share and synchronize this state. 
