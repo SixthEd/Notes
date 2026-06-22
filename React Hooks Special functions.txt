@@ -181,6 +181,8 @@ React LifeCycle
 		Browser Paint
 			↓
 		useEffect runs
+		
+"Whenever props or state changes, the component re-renders and the JSX is converted into React Elements. In the Render (diffing) phase, the new React Elements are compared with the existing Fiber tree to build a new Work-in-Progress Fiber tree, where changes are marked using flags. Then, in the Commit phase, the marked changes from this Work-in-Progress tree are applied to the real DOM."
 
 		
 	first time component mount
@@ -213,7 +215,7 @@ React LifeCycle
 		      ↓
 		useEffect
 
-
+when the component is mount the component function is executed and create new states functions and variables . JSx is converted into react element . there is not any diffing phase because there is no any existing fiber tree so in render phase a fiber tree is created using react element and all the changes are flags are marked. in the commit phase all the marked flags are inserted to create the real dom
 
 functions are different on every render by default
 
