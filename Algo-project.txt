@@ -1,0 +1,18 @@
+Sorting:
+
+Selection Sort: find min and then swap.
+
+Bubble Sort: Push max to the last by adjacent Swapping.
+
+Insertion Sort: take a element and put its correct position by backward adjacent swapping.
+
+Merge Sort: Divide and merge.
+
+Quick Sort: choose pivot and put it on its correct position in the array. Smaller on the left  and larger on the right side (Divide and Conquer).
+ 
+Radix Sort: Sort the number using digit wise.
+
+Count Sort: 
+
+
+

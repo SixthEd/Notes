@@ -1,0 +1,179 @@
+Memory:
+
+RAM
+
+	RAM is the physical memory in your computer.
+
+	Computer
+	┌──────────────────────────┐
+	│         RAM              │
+	│                          │
+	│  All running programs    │
+	│                          │
+	└──────────────────────────┘
+
+
+Everything a running program uses lives in RAM.
+
+Heap
+
+	The heap is not a separate kind of RAM. It's a region of RAM that a program uses for dynamic memory allocation.
+
+	When a program starts, the operating system gives it a chunk of RAM.
+
+	Inside that chunk, the program organizes memory into areas such as:
+
+
+	Node.js Process
+
+	+--------------------------------------+
+	| Code                                 |
+	+--------------------------------------+
+	| Stack                                |
+	+--------------------------------------+
+	| Heap                                 |  <-- dynamic memory
+	+--------------------------------------+
+	| Other native memory                  |
+	+--------------------------------------+
+
+
+	So:
+
+	Heap = part of the process's RAM.
+	Stack = another part of the process's RAM.
+	What about Buffers?
+
+	This is the interesting part.
+
+	A Buffer object has two pieces:
+
+	A JavaScript object (managed by V8's garbage collector).
+	The actual binary data.
+
+	const buf = Buffer.alloc(1024);
+
+
+JavaScript Heap (V8)
+
+	+----------------+
+	| Buffer object  |
+	| length = 1024  |
+	| pointer ------+----------------------+
+	+----------------+                      |
+		                                |
+		                                ▼
+	Native Memory (outside V8 heap)
+
+	+--------------------------------------+
+	| 1024 bytes of binary data            |
+	+--------------------------------------+
+
+	The Buffer object is on the JavaScript heap, but the binary data is stored in native memory, which is still part of the process's RAM.
+
+	Why don't Buffers store their data on the JavaScript heap?
+
+	If they did, large binary data (images, videos, files) would fill up the V8 heap quickly and cause frequent garbage collection.
+
+	Node stores the binary data in native memory for better performance.
+
+	So when people say...
+
+	"Buffers use heap memory."
+
+	That statement is often imprecise.
+
+A more accurate statement is:
+
+✅ The Buffer object lives on the JavaScript heap.
+✅ The actual bytes are stored in native memory (outside the V8 heap).
+✅ Both the JavaScript heap and the native memory are ultimately part of the process's RAM.
+
+So the chain is:
+
+Physical RAM
+    │
+    └── Node.js Process
+          │
+          ├── JavaScript Heap (Buffer objects)
+          ├── Stack
+          
+The 8 KiB buffer pool is not a JavaScript Buffer object. It is a block of native memory used internally by Node.js.
+
+Node.js maintains an internal 8 KiB buffer pool in native memory. When you call Buffer.allocUnsafe() for a small buffer, Node creates a JavaScript Buffer object on the V8 heap. That object stores a pointer to a slice of the 8 KiB native memory pool.
+
+
+
+When a Node.js application runs, the Operating System allocates a block of physical RAM (DRAM) to the process. Node.js then divides this memory space into two main territories:
+
+    The V8 Sandbox: Managed entirely by Google's V8 JavaScript Engine. It has strict memory limits (usually 1.4 GB to 4 GB) and is constantly monitored by the V8 Garbage Collector (GC).
+
+    The C++ Native Space (External Memory): Managed by Node.js's underlying C++ layer (via libuv). It is not bound by V8's memory limits; it can grow as large as your computer’s physical RAM allows.
+
+📌 2. The Internal Split: Stack vs. Heap
+
+Inside the memory allocated to your code, data is organized into two structures based on how it behaves:
+A. The Stack
+
+    What it does: Tracks function execution (The Call Stack) and small, immediate data.
+
+    What lives here: * Primitive variables (numbers, booleans, null, undefined).
+
+        Memory Addresses (Pointers) that look like 0x7fff3. These pointers point to where heavier objects actually live in the Heap.
+
+    Speed: Extremely fast, managed automatically by the CPU.
+
+B. The Heap
+
+    What it does: Stores complex, dynamic data structures whose sizes can change over time.
+
+    Speed: Slower than the Stack, requires a Garbage Collector to clean up unused data.
+
+📌 3. How Different Data Structures Use Memory (The Golden Comparison)
+Case 1: Standard JavaScript Structures (Object, Array, Map)
+
+Standard JS structures are treated as V8's "private property." Everything about them lives inside the V8 engine.
+JavaScript
+
+let user = { name: "John" };
+let list = [1, 2, 3];
+let cache = new Map();
+
+    On the Stack: V8 stores the variable name (user, list, cache) and a pointer address.
+
+    On the V8 Heap: V8 stores the entire content (the keys, values, and array elements).
+
+    ⚠️ Key Limitation: Because the actual data sits inside the V8 Heap, these structures are strictly bound by V8's memory ceiling. If an Array or Map gets too big, the application crashes with a JavaScript heap out of memory error.
+
+Case 2: The Exception Structure (Buffer)
+
+Node.js Buffers (and binary TypedArrays) are unique. They are designed to handle heavy binary I/O (files, network packets) without breaking the V8 engine. They store memory using a three-tier chain:
+JavaScript
+
+const myBuffer = Buffer.alloc(1024); // Allocates 1 KB of binary data
+
+    The V8 Stack: Stores the variable name myBuffer and a memory address pointing to the V8 Heap.
+
+    The V8 Heap: Stores a tiny JavaScript Wrapper Object (a pointer reference). It contains almost zero data; it just acts as a "remote control."
+
+    The C++ Heap (External RAM): Stores the actual raw binary bytes.
+
+📌 4. Why are Buffers Designed to Live Outside V8?
+
+When writing your notes, remember the two engineering reasons why Node.js offloads Buffers to external C++ memory:
+
+    Garbage Collection (GC) Efficiency: V8's Garbage Collector must regularly freeze execution briefly to scan the heap for dead objects. If you loaded a 2 GB file into a standard JavaScript Array, the GC would freeze trying to scan 2 billion elements. By putting the binary data in the C++ Heap, the GC only scans the tiny wrapper object, keeping the app ultra-fast.
+
+    Zero-Copy Performance: When your computer reads a file from disk or receives data from a TCP network socket, that data arrives at the operating system's native C++ level. Because Node Buffers live in that exact same C++ memory layer, Node can read/write to the network card instantly without wasting CPU cycles copying data into the JavaScript sandbox.
+
+💡 Summary Cheat Sheet for Your Note
+
+    Primitives (5, true): Stack only.
+
+    Objects, Arrays, Maps: Stack (Pointer) ➡️ V8 Heap (Data).
+
+    Buffers: Stack (Pointer) ➡️ V8 Heap (Wrapper Object) ➡️ C++ Heap/External RAM (Actual Binary Data).
+
+Does this capture everything you wanted to include in your notes, or should we add a section on how Buffer.alloc() vs Buffer.allocUnsafe() handles this external memory?
+
+
+

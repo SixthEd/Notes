@@ -1,0 +1,16 @@
+DSA
+Questions: 3348. Smallest Divisible Digit Product II
+
+1-9 number are prime factor
+
+
+KMP algo: String matching algo using LPS (longest suffix and prefix)
+
+check is the str is in string
+without this we will take  O(n*m)
+
+LPS store the longest prefix and suffix which is equal length from 0 to j
+
+LPS[0] =0;
+
+

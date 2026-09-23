@@ -1,0 +1,71 @@
+nvm ls: use to check which version is installed in our system.
+nvm install version : to install version whatever we want in our system.
+nvm use version : switch version
+nvm alias default version: set default version
+nvm ls-remote: show the list of whole version in remote
+nvm uninstall version: to uninstall the version from the system.
+
+Let we have two projects p1 and p2
+p1 and p2 both work with diff version of node and whenever i switch to the project we don't to switch version manually we can do it automatically
+Ex: go to p1 and switch to version or install then switch version after create a file .nvmrc and add the version and just type "nvm use"
+
+
+NodeJS
+
+C/C++ -----------> Assembly Language -------------> machine Code
+	compiler			assembler
+	
+	
+V8 engine is called JS engine
+Ecmascript: It is a language Specification that specifies how javascript should react, how javascript should be implement
+Libuv: is a library written in C that provide event loop and use to handle non blocking operations network
+Pipe:  communication between node and other services is done by pipe
+
+
+
+
+Buffer:
+	as we know everything is zero and one . and Buffers are the things that connect nodejs to all zeros and ones.
+
+	1 byte=  8 bits
+
+	in bit representation rightmost bit is called least significant bit or least significant digit.
+	in bit representation leftmost bit is called most significant bit or most significant digit
+
+	base 2  machine 0-1
+	base 10 human form 0-9
+	base 16 (hexadecimal) 0-9-A-F 4 bits= 1 hexadecimal number. Hexadecimal number are looks like 0x456 so 0x shows it is a hexadecimal number.
+
+	A Buffer stores raw bytes in memory (binary data), but Node.js displays those bytes in hexadecimal by default.
+	A Buffer is a small block of memory allocated inside your Node.js process's RAM.
+	
+	Buffer is just like data structure. Buffer is similar to array. Like it contain index and each index contains sequence of zeros and ones. Buffer size is fixed. As soon as buffer created all the index is
+	filled by sequence of zeros. In node js each index of buffer holds 8 bits
+	
+Character sets: Uncicode and ascii
+ 		system of mapping
+ 		A character set is a mapping between characters and numeric values (code points), which can then be stored as binary in memory.
+ 		
+ 		ASCII and UNCICODE both are character sets.
+ 		
+ 		ASCII defines 128 characters . Ascii is a subset of unicode. Unicode supports far more characters. Unicode include almost all worldwide characters.
+ 		
+Encoder and Decoder: Like in Image Encoder are that convert image into binary data decoder works opposite of this.
+
+Character Encoding is works in the OS to do assigning a sequence of bytes( just some zeros and ones) to a character. The most common encoding is UTF-8 it is defined by UNICODE standard.
+
+UTF-8 using unicode to convert 8bits squence
+
+
+Buffer value 0-255
+
+Computers ultimately work with binary data (0s and 1s). A single 0 or 1 is called a bit, and 8 bits make 1 byte.
+
+To represent text, computers use a character set. Today, the most common character set is Unicode, which assigns a unique code point to each character. For example, A is U+0041 and s is U+0073.
+
+A character encoding such as UTF-8 converts these Unicode code points into one or more bytes. These bytes are stored in memory as binary data and can be transmitted over a network or saved to a file.
+
+In Node.js, a Buffer is a fixed-size memory area used to store raw bytes. When data such as text, images, videos, files, or network packets is received, Node.js often stores the incoming bytes in a Buffer. The data can then be decoded or interpreted according to its format (UTF-8 text, JPEG image, MP4 video, JSON, etc.).
+In Node.js, a Buffer primarily uses RAM (main memory), but more specifically, it is allocated outside the V8 JavaScript heap
+
+Buffer inhereted from UNIT-8 Class

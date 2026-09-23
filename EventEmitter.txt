@@ -1,0 +1,44 @@
+EventEmitter
+
+
+EventEmitter: use to create event in javascript. Both eventEmitter and addEventListener are same but  eventEmitter used in javascript and addEventListener use in browser side.
+
+	const EventEmitter = require("events");
+
+	class Room extends EventEmitter{
+
+	}
+
+	let room = new Room()
+	room.on("classroom", ()=>{
+	    console.log("classroom A")
+	})
+
+
+	room.on("classroom", ()=>{
+	    console.log("classroom B")
+	})
+
+
+	room.on("classroom", ()=>{
+	    console.log("classroom C")
+	})
+
+	room.on("classroom", (number)=>{
+	    console.log(`classroom ${number}`)
+	})
+
+	room.once("room", ()=>{
+	    console.log(`room A`)
+	})
+
+	// a object is created where all the event are store if event are same then it create and array and store in it
+	// {"classroom": [allcallbacks] , "room": []} and all are executed
+
+	room.emit("classroom",10)
+	room.emit("room")
+	room.emit("room") // but this is not giving any error
+	room.emit("dd")  // but this is not giving any error
+
+	//if a event is created using once that means if it emit then it is not available after
+

@@ -1,0 +1,130 @@
+File System:
+	It require fs module. Using this module we can deal with files. We can write in files. We could read files search and directories.
+	const fs = require("fs");
+
+Read
+
+	const fs = require("fs");
+
+	const content =fs.readFileSync("./text.txt");
+
+	console.log(content) //buffer 
+
+	console.log(content.toString("utf-8"))
+
+
+file is a sequence of bits
+	A hard-drive contains bits and this sequence of bits means a files. Now this files are has some other data associated with it. Now they are saved in some other file, which is called file 
+	data which corresponds to a file that contain name of file, protection (whether you can write in file or read), location, type, timestamp (when was the file open , update, create ) and 
+	other information
+
+
+The Hard Disk Layout
+Area 1: The Map Table (Stored as Bits)
+
+	The hard disk reads a specific section reserved for the directory map. To the computer, it looks like a binary lookup table:
+	JavaScript
+
+	// Physical Hard Disk Section A (The Map Table)
+	"1001100": {                  // The unique binary identifier for this file entry
+	    name: "text.txt",         // The name you see on screen
+	    metadata_pointer: "0001"  // The address pointing to the file's profile
+	}
+
+Area 2: The Metadata Block (Stored as Bits)
+
+	At address 0001, the disk stores the file's profile details:
+	JavaScript
+
+	// Physical Hard Disk Section B (Metadata Storage)
+	"0001": {
+	    type: "txt",
+	    permissions: "read-write",
+	    data_pointer: "11110000"   // The exact physical location of the file's content
+	}
+
+Area 3: The Raw File Content (Stored as Bits)
+
+	At the physical location 11110000, the disk stores the actual sequence of bits that make up the content of text.txt:
+	Plaintext
+
+	// Physical Hard Disk Section C (Data Blocks)
+	10101011... (The actual text bits)
+
+Why the Binary Map Table Identifier (1001100) is so Important
+
+The key 1001100 you created is what low-level operating systems use to track the file rather than the name.
+
+Because the system works this way, look at what happens when you create a shortcut (or a symbolic link):
+
+    The system creates a new entry in the map table (e.g., 1001101).
+
+    Instead of pointing to metadata or new data, its content simply says: "Go look at text.txt or entry 1001100."
+    
+
+
+[ YOU DOUBLE-CLICK THE ICON ]
+              │
+              ▼
+1. TRANSLATION: The OS converts your click on "text.txt" into a binary lookup request.
+   "Find the entry for text.txt" ───> 1010110
+              │
+              ▼
+2. MAP LOOKUP: The computer searches the Directory Map Table using that binary token.
+   Map Table Entry: 1010110 ───> "Look at Metadata ID 0001"
+              │
+              ▼
+3. METADATA CHECK: The OS jumps to Metadata block 0001 to read the file's profile.
+   Metadata 0001: { Permissions: "OK", Data_Location: "Sector_99" }
+              │
+              ▼
+4. HARD DRIVE READ: The physical drive head reads the raw content bits from Sector_99.
+   Physical Sector_99 ───> 00110
+              │
+              ▼
+5. RENDERING: The text editor app takes the bits 00110 and translates them back to text.
+   00110 ───> Displays "Hello" on your screen
+  
+How node deals with files:
+
+
+Node js does not know how to go to the hard-drive then find a file and modify bits there. So node js is talking to our OS. Node js uses systemcalls to talk with OS. Then OS goes to the hardware and do some different things.
+Let I wants to open file using node. Node will run a function then node js using libuv will call the systemcall. Then tell the OS that I want to open this file. In this case open() system call. So now we are going to run that open call which is an operating system command. Then OS is going to go to the hard drive, find that file, fetch the zeros and ones and give you the data.
+
+
+We can work with the fs module with 3 different ways do same thing
+Promise api (best way)
+Callback api (it is faster use it when performance is really critical and we want maximum amount of CPU)
+Synchronous api (stay from it. Use it when we want to read config of a file before start the application)
+
+
+
+fs.watch:
+used to continuously monitor a file or directory for modifications, returning an fs.FSWatcher object to track those changes. 
+
+const watcher = fs.watch("./")
+
+watcher is async iterator
+
+
+Read:
+Before read a file we have to open it then we can read the file or write in it. We are not actually moving the contents of the file to memory, what happens it that we are just saving the number regarding to this file. It is called file descriptor.so file descriptor is just a number that is assigned to a opened file.
+fs.open() (or fs.promises.open()) returns a FileHandle object, and that object contains the file descriptor along with methods to operate on the file.
+
+Once we open the file we need to close it also. Because we are occupying the memory if we forget to close it will run into memory issues like memory leak. 
+All FileHandle object are EventEmitter 
+
+
+fs.readFile:
+Open the file and the read whole file and give me the buffer
+
+const read = fs.read() it will give me chunk of file and read.byteRead gives how many bytes read when it is zero then we need to stop
+
+ let byteRead = -1;
+
+    while (byteRead !== 0) {
+        const read = await srcFile.read();
+        byteRead = read.bytesRead;
+    }
+
+

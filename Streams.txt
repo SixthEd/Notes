@@ -1,0 +1,325 @@
+Streams
+
+console.time("label") first
+console.timeEnd("label") last
+
+it will give the time between both
+
+//time 8s, 100% of the cpu (one core) , Memory 50MB
+
+when we use fs.write() node will automatically create buffer
+but when we create buffer
+const buffer = Buffer.from(`${i}`,"utf-8") //this will take more  and add it to fs.write()
+
+when we use callback in for loop it is possible that some of the function still not finished after loop is over and it is also possible that callback is not running in serially
+
+const fs = require("fs");
+
+for (let i = 1; i <= 5; i++) {
+    fs.writeFile(`file${i}.txt`, `${i}`, () => {
+        console.log(`Finished writing ${i}`);
+    });
+}
+
+console.log("Loop finished");
+
+It takes more memory
+
+for loop starts
+      │
+      ├── Start async write 1
+      ├── Start async write 2
+      ├── Start async write 3
+      ├── Start async write 4
+      ├── Start async write 5
+      │
+Loop ends
+      │
+      ▼
+Event Loop waits...
+      │
+      ├── write 3 completes → callback 3
+      ├── write 1 completes → callback 1
+      ├── write 5 completes → callback 5
+      └── ...
+
+fileHanlder stream: Takes string or buffer 
+createReadStream : To read
+createWriteStream: To write 
+
+Steam:
+An abstraction interface for working with streaming data.
+
+Data stream:
+means you don't send the whole data in one chunk. You move it over the time in different chunks, you break it down to different chunks, then you send those chunks over, and then at the end you just combine them
+together or may be not.
+
+
+When you run await stream.write(' 1 '), Node.js actually does not wait to build up a buffer.
+
+Instead, it takes that tiny string, converts it to a binary buffer immediately for that specific piece of data, and instantly fires a system call to the OS. Because you have await there, the entire loop freezes, waits for the hard drive to reply "Got it!", and only then moves to i = 2.
+
+[Loop i=1] ──> Create tiny buffer ──> System Call ──> (Wait for Disk)
+[Loop i=2] ──> Create tiny buffer ──> System Call ──> (Wait for Disk)
+... Repeated 1,000,000 times
+
+2. The Stream Approach (Internal Buffering)
+
+When you use a stream, your mental model is 100% correct. Node.js manages an internal buffer queue in V8 memory (RAM) that defaults to a highWaterMark of 16 KB for strings/buffers.
+
+    Step 1: You call stream.write(' 1 '). Node puts it in the internal 16 KB buffer. The loop doesn't wait; it immediately jumps to i = 2.
+
+    Step 2: This repeats rapidly in RAM until the accumulated strings hit that 16 KB limit.
+
+    Step 3: Once full, Node.js takes that entire 16 KB chunk of data, makes one single system call, and flushes it to the disk all at once.
+
+[Loop 1 to 2000] ──> Fill Internal 16KB Buffer (Ultra Fast RAM)
+                               │
+                       [Buffer is Full]
+                               │
+                               ▼
+               1 Single System Call ──> Write 16KB to Disk
+
+Why this matters for speed
+
+A single 16 KB write takes almost the exact same amount of OS overhead as a 3-byte write. By grouping them into 16 KB chunks, you are reducing the number of operations from 1,000,000 down to roughly 400-500 system calls. That is why it feels instantaneous compared to the individual loop!
+
+There are four types of stream:
+Writable
+Readable
+Duplex: Use for both writable and readable . It has two buffer one for reading and one for writing
+Transform: Just like duplex but it transform the data . It has two buffer one for reading and one for writing
+
+
+Fs.createWritableStream :
+Give the stream object, Inside this writable stream object we have an internal buffer and it size is 16384 bytes Which is specified by high water mark value. We can change it. This is by default how much of a buffer will be allocated to each stream in node. Apart of this buffer, stream object has some events, properties and methods available on it. Most important method stream.write(data) what happened we use it that we push some amount of data into internal buffer and we keep pushing until buffer is completely filled. Then it will do write means it will all of its data out in one chunk and one write. The process that stream does to empty
+this buffer is called draining. We have kept eye on this event. This is an event
+
+If we try to fill the stream buffer with high amount of data what will happen node will push this data in the buffer pool once the internal buffer flushes then buffer pool data will send in the stream internal buffer 
+
+Node.js actually tries to write the data immediately to the underlying resource (like a file on your disk or a network socket).
+
+    If the resource is fast: The data passes straight through. The internal buffer stays at 0 bytes.
+
+    If the resource is busy/slow: Node.js cannot write immediately. This is when the data gets queued up in the internal buffer.
+    
+In readable stream, all things are same but the data is pushed using in the buffer using stream.push(data) and once then buffer is filled then event "data" run stream.on("data", (chunk)=>{...}
+
+
+So if we have a big data like 800MB and i want to write it so first i have read it using readable stream send the chunk of 16kb then do writable stream
+
+  console.log(stream.writableHighWaterMark) // size of internal buffer of stream
+        console.log(stream.writableLength) // how much buffer is filled
+
+When we use stream.write it will give boolean value true means buffer is not completely full yet. If it returns false then we should for the stream to empty the data and do final write
+
+stream.on('drain') runs when the buffer filled and it become full then the stream will take sometime to empty itself once its done its going to emit 'drain' event. 
+
+let if i am filling stream buffer more than 16kb this should not be happened because it will take external memory to store the data so we should never let value bigger than high water mark
+whenever stream.write return false we should stop and wait for the drain event to run
+
+stream.end(buff) //this will return emit a (finish) event, this means we are done with the stream and i am not going to use it anymore to that stream
+                    //after this if we try to write it will give an error
+                    
+When you use stream.end(buff): It send and flushes that last buffer, closes the stream, and tells the system, "I am completely done. Do not expect any more data."
+
+When you DON'T use stream.end(): The event loop still flushes that last data so it isn't lost, but the stream stays open, effectively saying, "I am empty right now, but I am still waiting and asking for more writes."
+
+stream.on(close, ()=>{}) event runs when we close the filehandler means we are closing the fileDestruptor.
+
+stream.writable.setDefaultEncoding use only when you are dealing with text file.
+
+After stream.end() is called, the remaining buffered data is written. Then the 'finish' event is emitted, and after the underlying file resource is closed, the 'close' event is emitted.
+
+	stream.end()
+	     ↓
+	No more data is accepted
+	     ↓
+	Remaining buffered data is written
+	     ↓
+	'finish' event
+	     ↓
+	File descriptor/resource is closed
+	     ↓
+	'close' event
+
+	Readable Stream
+
+We can consume the data that will come to the stream by adding an event listener stream.on("data", (chunk)=>{}) here default high Water Mark is 64kib , we can change this 
+fileHandler.createReadStream({highWaterMark: 400) 400 is in bytes
+When we first create readStream we are not reading anything. As soon as we add data event it start to read the data in chunks
+we have one more event is called stream.on("end") when there is no data to consume
+
+	File
+	  ↓
+	Data is read in chunks
+	  ↓
+	'data' event
+	  ↓
+	All file data has been read
+	  ↓
+	'end' event
+	  ↓
+	Underlying file resource is closed
+	  ↓
+	'close' event
+
+Hardrive has higher speed to read than write
+we can pause our read stream using stream.pause() and resume it using stream.resume()    
+
+
+Initialization: You call fs.createReadStream('file.txt'). Node.js allocates a chunk of memory (the internal buffer) with a default highWaterMark capacity of 64 KiB.
+
+The Fill Stage: Nodejs makes a low-level system call to read the file. It pulls the raw binary data from the disk and fills up that 64 KiB buffer.
+
+The 'Data' Event (Flowing Mode): The moment you attach .on('data', ...), the stream kicks into gear. It wraps the binary data from the buffer into a Node.js Buffer object and emits it.
+
+The Clear & Repeat Stage: Once that chunk is emitted to your listener, that space in the internal buffer is cleared out, and Node.js immediately goes back to the disk to read the next 64 KiB. This loop repeats until the end of the file (EOF) is reached.
+
+in write stream we have to end stream using stream.end then finish event run
+
+but in read stream it is done automatically run end event behind scene when stream started to read null that indicates stream is done 
+
+When you read a file using a stream, Node.js doesn't wait around to collect a massive file into memory. Instead, it chops the file into bite-sized pieces—up to 64 KB at a time by default—and hands them to your 'data' event listener as fast as it can.
+
+
+Pipe:
+
+In pipeing, it will automatically handle back pressuring means flush the buffer, drain, resume, pause
+
+readStream.pipe(writeStream) // any stream allow like duplex, write, transform but not readStream 
+
+we can chain it also
+
+readStream.pipe(writeStream).pipe(duplexStream).pipe(transformStream) // this means pipe(writeStream) is also return stream ,for this sequence then mid pipe should be duplex or transform because they will return read stream and writestream
+
+Since .pipe() returns the destination stream, any middle stream in the chain must be a Duplex or Transform (or any stream with a readable side). A plain Writable can only be the last stream in the pipeline because it cannot produce output for another .pipe().
+
+    
+    
+    
+    console.log(readStream.readableFlowing); //null because not start reading
+    
+    readStream.pipe(writeStream) //start reading
+
+    console.log(readStream.readableFlowing); //true start reading
+
+    readStream.unpipe(writeStream) //pause  
+
+    console.log(readStream.readableFlowing); //false
+
+    readStream.pipe(writeStream) //resume
+
+    console.log(readStream.readableFlowing); //true
+    
+
+unpipe event runs when we call the unpipe
+
+in production do not use pipe because of the poor error handling better to use pipeline it does pipe thing but also handler the error handling
+
+use pipe with pump npm module to handle the error because sometime in error it will not close the source
+
+we use const {pipeline} = require("stream");
+
+pipeline(readStream, stream1, ... streamN)
+
+all the stream should be either duplex or transform  
+
+we can use stream.finished for error handling and cleaning up
+readStream.pipe(duplexStream).pipe(writeStream)
+ stream.pipe return destination stream so this stream should be readable if we add another pipe
+
+Pipe could not handle the errors now if error occured in the pipe then it will not close the stream which will cause the memory issue;
+
+So better to use pipeline
+
+Pipeline:
+contains a callback function to handle the error
+
+CUSTOM WRITABLE STREAM
+
+const {Writable} from "stream";
+
+
+1. include
+2. extends the writable class
+3. Methods to implement here  //never emit event using child classes and _write = write inside the class use this to call the write  
+
+	The moment your code enters that if(this.chunksSize > this.writableHighWaterMark) block and fires fs.write(), your custom stream becomes busy.
+
+	Because fs.write() is an asynchronous operation, the callback() won't be executed until the hard drive finishes physically writing that concatenated buffer. While the hard drive is spinning and doing its 
+	job, the stream's state is locked as "busy."
+	
+	Here is the exact sequence of events during that specific moment:
+	The Timeline of the "Busy" State
+
+	    The Threshold is Crossed: You call stream.write(). Your custom this.chunksSize goes over 1600.
+
+	    The Async Trigger: Your code executes fs.write(this.fd, Buffer.concat(this.chunks), ...).
+
+	    The Lock: Because you have not called callback() yet, Node.js marks this stream as busy.
+
+	    Incoming Data Diverted: While fs.write is running in the background, if you call stream.write() again from your script, Node.js says: "Wait, _write is currently busy writing a massive concatenated 
+	    chunk to the disk. I cannot pass this new data to _write yet."
+
+	    Internal Buffer Fills Up: Node.js takes those incoming chunks and parks them inside its own hidden internal buffer.
+
+	What happens when fs.write finishes?
+
+	Eventually, the disk finishes writing, and the fs.write callback triggers:
+	JavaScript
+
+	this.chunks = [];
+	this.chunksSize = 0;
+	++this.writeCount;
+	callback(); // <--- THE UNLOCK
+
+	The moment that callback() is fired:
+
+	    Node.js marks the stream as not busy.
+
+	    Node.js looks at its internal buffer, sees the chunks that piled up while the disk was busy, pulls the first one out, and hands it to your _write() method.
+
+	    If Node.js's internal buffer was completely filled up (causing stream.write() to return false) and is now completely emptied out by this process, Node.js will officially emit the "drain" event.
+
+	To summarize your setup:
+
+	You actually have two layers of queues acting like a funnel:
+
+	    Your this.chunks array: Buffers data before it hits the disk, waiting for the size to cross 1600.
+
+	    Node's Internal Buffer: Buffers data before it hits your _write method, but only during the brief window when fs.write is actively talking to your hard drive.
+
+
+CUSTOM Readable Stream:
+
+read will create the buffer and get the data from the file then put buffer into internal buffer and send the stream data event read this chunk buffer from the internal buffer and read it 
+
+
+Duplex: 
+Node doesn't have duplex instead of that we can make using Duplex class
+
+Duplex Object does have writable and readable buffer internal both separate
+
+In readable we push data stream.push(data) to push the data into internal read buffer
+in writable buffer we write into the internal buffer using stream.write
+
+It is use in net module TCP sockets
+
+instead of push the data in the file from writeable buffer we now push 	the written  data into readable buffer side of duplex we can now consume the data this type of stream is transform stream
+
+if we pass the data around don't anything we still has transform stream but we called a pass through stream because we are passing the data and we are not really  anything but if we do operation ex compressing file.
+
+
+
+////////////////////////
+we usually compress the data when we are sending the response and recieveing the request
+In node,
+Encrytion, decryption, hashing and salting done using crypto module
+compression is done by zlib module
+Encoding and decoding use buffer text-encoding/decoding
+
+
+In transform stream we don't need to create own all of the method they are already done in transform Class so create only transform method
+
+_transform(chunk, encoding (default buffer), callback)

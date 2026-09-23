@@ -24,7 +24,7 @@ For example, the victim logged into their bank's application. Then they were tri
 
 To prevent such CSRF issues, all browsers now implement the same-origin policy.
 
-The browser sends the preflight request before the actual request message. The server must respond to the preflight request with information about the cross-origin requests the server’s willing to accept from the client URL. The server response headers must include the following:
+The server response headers must include the following:
 
 Access-Control-Allow-Methods
 Access-Control-Allow-Headers

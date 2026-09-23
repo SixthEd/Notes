@@ -96,3 +96,18 @@ sudo lsof -i :<port> : find the process working the port number
 			:<port> → Filters for a specific port number
 
 To remove a package and its associated configuration files, use the apt purge or apt-get purge
+
+
+create variable and use:  name="zaku"
+			  echo $name 	
+			  
+for loop: for i in {1..10}; do touch "index$i.html"; done
+
+re-name a dir or file : mv old_filename new_filename
+
+move a file : mv file_name  path
+
+ssh : use to get the access of the computer
+
+man ascii | head -23 | tail -2 > new.txt : means whatever output comes from the man ascii it is send as input using pipe and head will give first 23 lines and tail -2 give the last 2 lines and > new.txt save the 		
+				           output.

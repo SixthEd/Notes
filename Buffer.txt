@@ -1,0 +1,138 @@
+Buffer:
+
+1. The Basics of Binary & Data Representation
+
+At the lowest level, computers processing data only understand binary (sequences of 0s and 1s).
+
+    Bit: The smallest unit of data (a single 0 or 1).
+
+    Byte: A group of 8 bits. A single byte can represent decimal values from 0 to 255.
+
+    Bit Significance:
+
+        LSB (Least Significant Bit): The rightmost bit in a sequence, holding the smallest value.
+
+        MSB (Most Significant Bit): The leftmost bit in a sequence, holding the largest value.
+
+	Number Bases Comparison
+	Base	Name	Character Set / Format	Example
+	Base 2	Binary	0-1	01000101
+	Base 10	Decimal	0-9 (Human-readable)	69
+	Base 16	Hexadecimal	0-9 and A-F	0x45 (The 0x prefix denotes hex)
+
+    Note: Exactly 4 bits (a nibble) can be perfectly represented by 1 hexadecimal character. Therefore, 1 byte (8 bits) is represented by 2 hexadecimal characters (e.g., 0xFF).
+
+2. Character Sets vs. Character Encodings
+
+To display text, computers map binary data to human-readable characters using Character Sets and Encodings.
+Character Sets (The Map)
+
+A Character Set is a defined collection of characters mapped to unique numeric values called code points.
+
+    ASCII: An older standard defining 128 characters (primarily English letters, numbers, and basic symbols) 8bits.
+
+    Unicode: A modern standard aiming to include almost all worldwide characters, emojis, and symbols. ASCII is a subset of Unicode.
+
+
+Character Encoding (The Execution)
+
+    An Encoding is the algorithm that converts those numeric code points into a sequence of bytes to be saved in memory or transmitted.
+
+    UTF-8: The most common encoding defined by the Unicode standard. It uses a variable number of bytes (1 to 4 bytes) to represent Unicode characters efficiently.
+
+Encoders and Decoders
+
+    Encoder: Converts high-level data (like text, images, or video) into raw binary data.
+
+    Decoder: Converts raw binary data back into its original high-level format (e.g., turning bytes back into a JPEG image or UTF-8 text).
+    
+    	Character
+	    │
+	    ▼
+	Unicode code point
+	('w' → U+0077 → 119)
+	    │
+	    ▼
+	UTF-8 encoder
+	    │
+	    ▼
+	Bytes
+	0x77
+	    │
+	    ▼
+	Binary
+	01110111
+
+3. What is a Node.js Buffer?
+
+A Buffer is a global global data structure in Node.js used to handle raw binary data directly in memory.
+
+In Node.js, a Buffer is a special object used to handle, manipulate, and represent raw binary data.
+
+    Memory Allocation: Buffers are allocated inside your system's RAM, but specifically outside the V8 JavaScript heap.
+
+    Fixed Size: Once a Buffer is created, its size cannot be changed.
+
+    Array-like Behavior: You can access individual elements of a Buffer using index notation (e.g., buf[0]).
+
+    Default Display: While a Buffer stores raw binary, Node.js prints/displays it in hexadecimal format by default for readability. However, accessing an index directly returns its decimal value (0-255).
+
+    Class Inheritance: In modern Node.js, the Buffer class inherits from JavaScript's Unit8Array (Unsigned 8-bit Integer Array). This means each index holds exactly 8 bits.
+
+4. Buffer Methods & Memory Allocation
+
+	To use buffers, you can reference the global Buffer object or explicitly require it:
+	JavaScript
+
+	const { Buffer } = require("buffer");
+
+A. Buffer.alloc(size[, fill])
+
+    Behavior: Allocates a clean block of memory of the specified size.
+
+    Safety: It is safe because Node.js automatically initializes (zero-fills) the entire memory space.
+
+    Performance: Slower than unsafe methods because writing zeros across large memory blocks takes computational time.
+
+	JavaScript
+
+	const memoryContainer = Buffer.alloc(10000, 0); 
+	memoryContainer[1] = 0x12; // Assigning a Hex value
+
+	console.log(memoryContainer[1]); // Logs: 18 (Prints out the decimal representation)
+
+B. Buffer.allocUnsafe(size)
+
+    Behavior: Allocates memory quickly without zero-filling it.
+
+    Security Risk: It contains "garbage data"—leftover raw bytes from previously deallocated memory. If this memory previously held sensitive data (like API keys, passwords, or database strings), an attacker or 
+    		   unintended log could expose it.
+
+    Best Practice: Only use it if you plan to immediately overwrite the entire buffer with new data.
+
+C. Buffer.allocUnsafeSlow(size)
+
+    Behavior: Similar to allocUnsafe, it skips zero-filling and leaves raw leftover data.
+
+    The Difference: It explicitly bypasses Node.js's internal Buffer pool and requests a completely fresh, separate slice of memory directly from the OS.
+
+    Performance: Slower than allocUnsafe because it cannot utilize pre-pooled memory.
+
+5. The Internal Node.js Buffer Pool
+
+To optimize performance and avoid making expensive system calls to the OS for every single small buffer creation, Node.js manages an internal Buffer Pool.
+
+    Pool Size: By default, Buffer.poolSize is 8192 bytes (8 KiB).
+
+    How it works: When you make a small allocation using Buffer.allocUnsafe() or Buffer.from() (specifically allocations smaller than half the pool size: Buffer.poolSize >> 1 or 4 KiB), Node.js splits off a small 
+    pre-allocated slice from this 8 KiB pool instead of asking the OS for new memory.
+
+	JavaScript
+
+	console.log(Buffer.poolSize); // Logs: 8192
+
+Summary of Unsafe Allocation Differences
+Feature			Buffer.allocUnsafe(size)	Buffer.allocUnsafeSlow(size)
+Zero-filled?		❌ No (Contains garbage data)	❌ No (Contains garbage data)
+Uses Internal Pool?	Yes (For allocations < 4 KiB)	❌ No (Always requests new memory)
+Speed			⚡ Extremely Fast	🐢 Slower (Due to OS system call)

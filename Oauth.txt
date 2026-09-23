@@ -1,6 +1,6 @@
 Oauth
 
-OAuth 2.0 is an authorization framework that enables users to grant an application access to their data from a third-party provider,
+OAuth 2.0 is an authorization framework or protocol for authorization that enables users to grant an application access to their data from a third-party provider,
 
 using this application do not need create authentication, and not create new login password again
 

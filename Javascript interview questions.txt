@@ -117,7 +117,7 @@ Edge cases:
 		[1].toString() → "1" → 1.
 	
 	Example 3: Lexicographical comparison
-		"2" > "12"; // true
+		"2" > "12"; // false
 		
 	Explanation:
 		Strings are compared character by character, not numerically.
@@ -874,7 +874,7 @@ Closures:
 fetch() initiates an HTTP request and resolves once response headers are received, returning a Response object whose body is a stream; res.json() asynchronously consumes that stream, parses it as JSON, and returns a Promise.
 
 
-Array Destructing:
+Array Destructuring:
 
 const [fName ,lName] = ["Rohan", "Kumar"]
 

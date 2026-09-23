@@ -1,0 +1,125 @@
+Without cables we are able to send the data using physical floppy disk
+
+After the cable the most common thing used is switch 
+So switch is connected to more than one computer to transfer the data using Ethernet cable . To connect this cable to the computer , computer has network card. Now days its inbuild in computers and laptop, Network do have unique address called mac address. A mac address is 48 bits are represented as hexadecimal. Now we can send information from one computer to any other computer which are connected through same switch 
+information contains data + source mac address + destination mac address.
+
+After the cable then switch then we added router on the top of the switches and connect the router to another. Now instead of mac addresses router works using ip address. Ip addess is the unique address assign to a specific device. Now this router has assign ip address to the device who are connected to it.
+
+Networking simply means way to communicate between the computers.
+
+Networking layers:
+
+Application layer: Data
+Transport layer: Segment (TCP/UDP)
+Network layer: This is where we have packets. This is where router comes into play and ip addresss.
+Data Link Layer: This part moves data and frames. In data link we have switches, these switches will receive those zeros and ones and they will combines into this whole frame thing. So they will extract the mac address, the data, the destination mac address, the source mac address. they will create a combine it create neat concept called frame, and they will figure out which machine has the destination mac address and the frame across to that machine
+Physical Layer: Ethernet cables that has RJ 45 connectors. (take bits)
+
+
+Using net module we can create tcp server 
+tcp socket is duplex stream
+
+Network layer in networking layer works with ip addresses. It gets the message and it breaks it down in different packet and moves from the point A to point B.
+
+IP says: "I know the destination IP address. I'll send these packets toward that computer."
+
+It does not care if:
+point b is no longer exist it will send the packets
+packets are lost,
+packets arrive out of order,
+packets are duplicated.
+
+Its only job is routing packets.
+
+That's the purpose of fourth layer. It gets the data from point A to point B, It has no idea about IP addresses. It has no idea how data is transmitted. It just makes sure data is received. 
+TCP says: "I will make sure the receiver gets every byte, in the correct order, with no duplicates." It will added port there to,know , move the data to a specific  application.
+The name transport layer is that it will add port number with packets. The main purpose of tcp is to make sure the data that we are sending is receiving exactly as the way it is.
+There are header tcp uses to make sure that all the data is received correctly.
+
+TCP insure that every data, every bit that you are intending to send is actually get sent correctly. 
+UDP does not really care about it. You just send the message and that its. There is no way udp to figure out the packet are sent correctly. A packet can be lost , but no one cares. Use for streaming stuff like video calling , audio call, video streaming. Here we only care about speed.
+
+In node js, we have net for tcp and datagram for udp.
+
+TCP headers:
+
+source port (16 bits), it is the port that the request is getting sent from.
+Destination port (16 bits)
+sequence number (32 bits)
+acknowledge number (32 bits)
+window (how big is the packet should be)
+Finn (tells whether or not the request is finished
+data (optional) like in 3 way handshake we do not need data
+
+TCP headers + data = segments
+
+UDP headers: 64 bits or 8 bytes
+source port (16 bits), it is the port that the request is getting sent from.
+Destination port (16 bits)
+segment length (tells how much big is the segment 16 bits) 
+data
+checksum (16 bits) it indicate whether data is or not corrupted
+
+
+127.0.0.1 is loopback address or localhost when a device send this request then this request send back to the same device.
+
+if devices connected through same network then they can access using private ip
+
+if we don't define port in http then port will run on 0.0.0.0 means it will allow traffic to both local machine and private ip from other devices
+
+port for the application should be greater than 1023 because lower than this port are for system.
+
+if we don't specify the port it will be by default 80.
+
+We can have different application running on different port if we are using different protocols.
+
+Net module use to create TCP server or ICP (interprocess communication protocol: it is use for communication between two or more processes in the same system. Example: Application and database. It is an OS concept). It does not use any ip instead of that we have to sepecify the file and this file used for the communication between two processes) and client server.
+
+For TCP:
+createConnection for the client
+createServer for the server
+
+net.Server is eventEmitter  
+
+end points A ------ B
+
+socket are called the end point which is used to communicate between client and server .It is duplex  
+this socket is net.Socket object
+
+client
+const client=net.createConnection({host:"127.0.0", port:3000},()=>{
+ console.log("Connecting to the server")
+})
+
+Here client is type of net.Socket
+
+Server:
+const server = net.createServer(); // server is type of net.Server
+
+server.on("connection", (socket)=>{
+    console.log("A new connection established")
+})
+
+socket is type of net.socket
+
+
+Readline module is used to get the input from the terminal
+rl.question use to ask question from the terminal
+
+const rl = readline.interface({
+input: process.stdin,
+output: process.stdout
+}
+
+
+sending message to everyone from server
+
+
+process.stdout has two function stdout.movecursor, stdout.clearline . Check about this in TTY
+
+process.stdout.clearline remove the current line from the terminal
+process.std.movecursor move the cursor 
+
+
+Note: If i want to stop callback loop then better to put it into promise and then resolve

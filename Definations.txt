@@ -35,3 +35,84 @@ A form element whose value is managed by the DOM itself, and React accesses the 
 
 Lifting State Up
 Lifting State Up is a pattern in React where you move the state from child components to a common parent component so that multiple child components can share and synchronize this state. 
+
+Mount:
+The moment a React component is created and inserted into the real DOM for the first time.
+
+Virtual DOM:
+The Virtual DOM (VDOM) is a lightweight JavaScript representation of the real DOM that React keeps in memory to decide what to change in the browser.
+
+
+
+
+
+
+
+
+
+
+Javascript:
+
+Execution Context:
+
+Hositing:
+Hoisting is the process that occurs during the creation phase of an execution context, where JavaScript creates identifier bindings for variables and declarations before code execution begins. For let, const, and class, the bindings are created (memory is set up), but they remain uninitialized until their declaration is executed.
+
+Temporal Dead Zone:
+The Temporal Dead Zone (TDZ) is the period between the creation of a let, const, or class binding and the execution of its declaration that initializes the binding.
+
+CallBack functions:
+function which is passed to another function as a argument
+
+Closure:
+A function that remembers variables from where it was created, even after that outer function has finished execution.
+
+Asynchronous Task:
+Asynchronous tasks are tasks that run independently without blocking the execution of the main program.
+
+Promises:
+A Promise is an object that represents the success or failure of an operation and its resulting value.
+
+Async/Await:
+async/await is syntax built on top of Promises that makes asynchronous code look like synchronous code.
+
+Node.js:
+
+Server:
+A server is a computer (or program) that Listens for requests from clients and sends back responses.
+
+Dns :
+DNS (Domain Name System) is like the phonebook of the internet.
+It converts a domain name (google.com) into an IP address (142.250.190.14) that computers can understand.
+
+Protocol :
+It is set of rules on how computer systems or programs can communicate each other.
+
+HTTP (HyperText Transfer Protocol) is an application-layer protocol that defines:
+How a client (browser/app) requests data and how a server responds.
+It is the language of communication between frontend and backend.
+
+
+Node js
+It is a JavaScript runtime environment built on the V8 engine that allows you to run JavaScript outside the browser (on the backend).
+
+Express 
+Express is a lightweight web framework built on top of Node.js that helps you create servers and APIs easily.
+
+Middleware
+Middleware is a function that runs between the request and the response.
+
+Docker
+Docker is a platform that allows developers to build, ship, and run applications within lightweight, portable containers.
+
+Docker image: 
+Are template or blueprint . It is use to create one or more containers.
+
+Containers:
+are running instances of images that are isolated have their own environment and set of processes.
+
+Cors:
+browser side security.
+
+Oauth
+OAuth 2.0 is an authorization framework that enables users to grant an application access to their data from a third-party provider.

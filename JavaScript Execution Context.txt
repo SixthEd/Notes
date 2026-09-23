@@ -1,7 +1,6 @@
 JavaScript Execution Context
 
-When we load a script or invoke a function a new execution Context is creat
-ed and pushed onto the callStack (stack)
+When we load a script or invoke a function a new execution Context is created and pushed onto the callStack (stack)
 
 What is execution context define the environment in which code is executed it contains many internal component that engines uses to keep track of the execution flow of the piece of 
 code

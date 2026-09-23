@@ -108,88 +108,88 @@ Stack elements are in decreasing order from bottom to top.
 ✅ All Common Use Cases for Monotonic Stacks
 ▶ 1. Next Greater Element (NGE)
 
-Find the next greater element for each item in an array.
+	Find the next greater element for each item in an array.
 
-Example:
-Input: [2, 1, 2, 4, 3]
-Output: [4, 2, 4, -1, -1]
-You want to know, for each number, what's the next greater one.
+	Example:
+	Input: [2, 1, 2, 4, 3]
+	Output: [4, 2, 4, -1, -1]
+	You want to know, for each number, what's the next greater one.
 
 ▶ 2. Next Smaller Element (NSE)
 
-Find the next smaller element for each item.
+	Find the next smaller element for each item.
 
-Example:
-Input: [4, 5, 2, 10, 8]
-Output: [2, 2, -1, 8, -1]
+	Example:
+	Input: [4, 5, 2, 10, 8]
+	Output: [2, 2, -1, 8, -1]
 
 ▶ 3. Previous Greater Element (PGE)
 
-Find the closest previous element that is greater.
+	Find the closest previous element that is greater.
 
-Example:
-Input: [3, 2, 1, 4]
-Output: [-1, 3, 2, -1]
+	Example:
+	Input: [3, 2, 1, 4]
+	Output: [-1, 3, 2, -1]
 
 ▶ 4. Previous Smaller Element (PSE)
 
-Find the closest previous element that is smaller.
+	Find the closest previous element that is smaller.
 
 ▶ 5. Largest Rectangle in Histogram
 
-Given the heights of histogram bars, find the largest rectangle area that can be formed.
+	Given the heights of histogram bars, find the largest rectangle area that can be formed.
 
-Problem Type:
-You need to know when to extend or stop the rectangle → use a monotonic stack to process heights efficiently.
+	Problem Type:
+	You need to know when to extend or stop the rectangle → use a monotonic stack to process heights efficiently.
 
 ▶ 6. Trapping Rain Water
 
-Find how much water can be trapped after raining.
+	Find how much water can be trapped after raining.
 
-Problem Type:
-Use stacks to keep track of boundaries and calculate trapped water between bars.
+	Problem Type:
+	Use stacks to keep track of boundaries and calculate trapped water between bars.
 
 ▶ 7. Daily Temperatures
 
-For each day, find how many days you need to wait until a warmer temperature.
+	For each day, find how many days you need to wait until a warmer temperature.
 
-Example:
-Input: [73,74,75,71,69,72,76,73]
-Output: [1,1,4,2,1,1,0,0]
+	Example:
+	Input: [73,74,75,71,69,72,76,73]
+	Output: [1,1,4,2,1,1,0,0]
 
 ▶ 8. Stock Span Problem
 
-Find how many consecutive days before today the stock price was less than or equal to today's price.
+	Find how many consecutive days before today the stock price was less than or equal to today's price.
 
 ▶ 9. Building Sunset View
 
-Determine which buildings can see the sunset based on their heights.
+	Determine which buildings can see the sunset based on their heights.
 
-Problem Type:
-A monotonically decreasing stack helps track taller buildings to the right.
+	Problem Type:
+	A monotonically decreasing stack helps track taller buildings to the right.
 
 ▶ 10. Remove Duplicate Letters / Lexicographically Smallest Subsequence
 
-Use a stack to build a sequence while ensuring order and uniqueness.
+	Use a stack to build a sequence while ensuring order and uniqueness.
 
 ▶ 11. Valid Parentheses or Balanced Brackets
 
-Though not always a monotonic stack, using stacks to track opening and closing elements is related.
+	Though not always a monotonic stack, using stacks to track opening and closing elements is related.
 
 ▶ 12. Sliding Window Maximum
-
-While deque-based, the approach is similar to maintaining a decreasing sequence.
+	
+	While deque-based, the approach is similar to maintaining a decreasing sequence.
 
 ▶ 13. Pattern Problems (e.g., Mountain Array, Valley Points)
 
-Monotonic stacks can help find boundaries for mountains, valleys, and pattern recognition.
+	Monotonic stacks can help find boundaries for mountains, valleys, and pattern recognition.
 
-✅ Key Properties of Monotonic Stack Problems
+	✅ Key Properties of Monotonic Stack Problems
 
-✔ You need to compare each element with previous or next elements.
-✔ The problem involves peaks, plateaus, or boundaries.
-✔ The solution requires fast lookups or skipping unnecessary comparisons.
-✔ A brute-force approach is too slow, and scanning left/right is needed efficiently.
+	✔ You need to compare each element with previous or next elements.
+	✔ The problem involves peaks, plateaus, or boundaries.
+	✔ The solution requires fast lookups or skipping unnecessary comparisons.
+	✔ A brute-force approach is too slow, and scanning left/right is needed efficiently.
 
 ✅ Examples of Problems in LeetCode/Interviews
 Problem	Type
@@ -250,3 +250,150 @@ Note : Subarray can be a subsequence
 		2,5
 		1,5
 		1,2,5
+		
+		
+(a+b)%k = (a%k +b%k)%k
+
+x =a%k;
+y= b%k;
+
+x + y =k
+
+
+When can you reconstruct the original tree?
+
+You need one of these:
+
+✅ Preorder + Inorder
+✅ Postorder + Inorder
+✅ Level Order + Inorder
+Preorder + Preorder Mirror use to create full Binary tree
+
+Note:
+Binary Search Tree = left subtree small and right subtree large
+
+Check if the number is power of 2?
+
+function isPowerOfTwo(n) {
+    return n > 0 && (n & (n - 1)) === 0;
+}
+
+Complete Binary Tree
+
+function createCompleteBinaryTree(arr, i = 0) {
+    if (i >= arr.length || arr[i] === null) {
+        return null;
+    }
+
+    let root = new Node(arr[i]);
+
+    root.left = createCompleteBinaryTree(arr, 2 * i + 1);
+    root.right = createCompleteBinaryTree(arr, 2 * i + 2);
+
+    return root;
+}
+
+
+------------------------------------------
+Total Number of Unique Permutations
+------------------------------------------
+
+	Method 1 (Factorial Formula)
+
+		Ways = total! / (f1! × f2! × ... × fk!)
+
+		where
+
+		total = f1 + f2 + ... + fk
+
+		f1, f2, ..., fk are the frequencies of each distinct character.
+
+		Example:
+
+		half = aabbc
+
+		total = 5
+
+		Ways = 5! / (2! × 2! × 1!)
+		     = 120 / 4
+		     = 30
+
+	------------------------------------------
+	Equivalent Combination Formula
+	------------------------------------------
+
+		Ways = C(f1, f1)
+		     × C(f1 + f2, f2)
+		     × C(f1 + f2 + f3, f3)
+		     × ...
+		     × C(total, fk)
+
+		where
+
+			C(n, r) = n! / (r!(n-r)!)
+
+		Example:
+
+			half = aabbc
+
+			f1 = 2
+			f2 = 2
+			f3 = 1
+
+			Ways
+			= C(2,2)
+			× C(4,2)
+			× C(5,1)
+
+			= 1 × 6 × 5
+
+			= 30
+
+	------------------------------------------
+	Formula for nCr (without factorial)
+	------------------------------------------
+
+		nCr = 1
+
+		for j = 1 to r
+
+		    nCr = nCr × (n - j + 1) / j
+
+		Optimization:
+
+		r = min(r, n - r)
+
+	------------------------------------------
+	Early Stopping
+	------------------------------------------
+
+		If during computation
+
+		nCr > k
+
+		stop and return k + 1.
+
+		If
+
+		ways > k
+
+		stop and return k + 1.
+
+		We only need to know whether
+
+		ways >= k,
+
+		not the exact value.
+
+
+
+Difference Array Idea
+
+	Instead of updating every element, only mark:
+
+	where the addition starts
+	where the addition ends
+
+	Range Addition (+x)	✅ Yes	Prefix sum reconstructs the values.
+	Range Subtraction (-x)	✅ Yes	Same idea; subtraction is just adding a negative value.
+	Range Increment/Decrement	✅ Yes	Same as addition/subtraction.
