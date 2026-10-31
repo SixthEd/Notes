@@ -8,23 +8,31 @@ One we to create promise by using new promise constructor
 
 An asynchronous task refers to an operation that can be executed without blocking the main thread of execution. This means that the program can continue to perform other operations while the asynchronous task is running in the background. Examples include network requests, file I/O, or database interactions. In JavaScript, asynchronous tasks are often handled using mechanisms like Promises or async/await.
 
-new Promise((resolve, reject)=>{
-	resolve("done")
-})
+
+Using Promise constructor we can create Promise object
+
+	new Promise((resolve, reject)=>{
+		resolve("done")
+	})
 
 this constructor also receives an executor function when the new promise constructor is executed a new promise object is created in memory and this object contains some internal
 slots
-Promise State
-Promise Result
-PromiseFullfillReaction
-PromiseRejectReaction
-PromiseIsHandled
+	Promise State
+	Promise Result
+	PromiseFullfillReaction
+	PromiseRejectReaction
+	PromiseIsHandled
 
 
 if promise resolve the state become fulfilled and promise result is the value we passed in resolve
 whenever we chained then it is responsible for creating that promise reaction method this promise reaction contains a handler 
 
+We can resolve this promise using resolve which is available by executor function.
+We can create promise reaction by chaining then and catch method. Whenever we adding then, it is responsible for creating promise reaction record this reaction record contains a handler and this has some code and that code is that callback that we passed to then. Whenever we resolve the promise the promise state is fullfilled , the promise result is set to the value which we pass to resolve and the promise reaction records handler receive that promise result and handler is added to the microtask.
 
+Usually we have to specify async task in the promise constructor like file system , network request or as timer whenever they return the data we can use their callback function to either resolve with the data that they return or reject if an error occurred.
+
+then itself also returns a promise so beside just creating the promise reaction record it also creates an promise object
 	
 ┌────────────────────────────────────────────┐
 │                 Source Code                │
@@ -143,7 +151,7 @@ o/p  Promise { 'Hello' }
 In a Promise chain, only the first catch() that handles the error runs, unless it throws another error.
 
 
-Promise.allSettle() always run if a promise fullfilled or not 
+Promise.allSettle() always run if a promise fullfilled or rejected 
 
 Yes, even if all promises fail, Promise.allSettled() still resolves and its .then() runs.
 It waits for all promises to settle and then resolves with their statuses.
@@ -162,7 +170,7 @@ It waits for all promises to settle and then resolves with their statuses.
 		    console.log("catch runs");
 		  });
 
-o/p:
+	o/p:
 		[
 			  { status: "fulfilled", value: "Success" },
 			  { status: "rejected", reason: "Failed" },
@@ -174,17 +182,804 @@ Promise.all():
 
 Promise.all() waits for all promises and returns their results in an array. If one of the promise is rejected then whole process is reject and return only reject one.
 
+	Promise.all([
+	    Promise.resolve(10),
+	    Promise.resolve(20),
+	    Promise.resolve(30)
+	]).then(values => console.log(values));
+
+	o/p: [10,20,30]
+	
+	
+	Promise.all([
+	    Promise.resolve(10),
+	    Promise.reject("error"),
+	    Promise.resolve(30)
+	]).then(values => console.log(values));
+
+	o/p: error
+
+
+
+
+
 Promise.any() :
 
 Promise.any() returns the first fulfilled (successful) Promise.
 It ignores rejected promises unless all promises reject.
 
+	Promise.any([
+	    Promise.reject("Error A"),
+	    Promise.resolve("Success"),
+	    Promise.resolve("Another success")
+	]).then(value => console.log(value));
+	
+	o/p: Success
+
+
+
 Promise.race() :
+
 Promise.race() returns the result of the first Promise that settles.
 
+	Promise.race() — First Promise to settle wins
 
-  
-Promise.all([])	Resolves with []
-Promise.allSettled([])	Resolves with []
-Promise.any([])	Rejects with AggregateError
-Promise.race([])	Promise Pending forever
+	Promise.race([
+	    new Promise(resolve => setTimeout(() => resolve("A"), 100)),
+	    new Promise(resolve => setTimeout(() => resolve("B"), 200))
+	]).then(value => console.log(value));
+	
+	o/p: A
+
+
+
+Edge Cases:
+
+
+Promise.resolve()
+
+	Promise.resolve(10).then(console.log);
+	o/p: 10
+
+	Promise.resolve(Promise.resolve(20))
+	    .then(console.log);
+	    
+	 o/p: 20   Promise { fulfilled: 20 } → .then() → result = 20 → console.log(20)
+	 
+Promise.reject()
+	
+	Promise.reject(Promise.resolve(10))
+    		.catch(error => console.log(error));
+    		
+    	o/p: Promise {10}
+    	
+Promise.all()
+	
+	Promise.all([
+	    Promise.resolve(1),
+	    Promise.reject("Error"),
+	    Promise.resolve(3)
+	])
+	.catch(console.log);
+    		
+    	o/p: "Error"
+    	
+    	
+	Promise.all([]).then(console.log);
+
+	o/p: []
+	
+Promise.allSettled
+	
+	Promise.allSettled([]).then(console.log);
+	
+	o/p: []
+	
+
+Promise.race
+	
+	const p = Promise.race([]);
+
+	console.log(p);
+	
+	o/p: Promise { <pending> }
+	
+	
+
+Promise.any()
+
+	Promise.any([]) or  Promise.any([p1,p2,...pn]) if all promise reject then Rejects with AggregateError
+	
+	
+EXTRA IN DEPTH:
+
+JavaScript Promises — Edge Cases and Key Behaviors
+===================================================
+
+1. Promise.resolve()
+
+	A. Resolve with an ordinary value
+	---------------------------------
+		Promise.resolve(10).then(console.log);
+		// Output: 10
+
+		Promise.resolve(10) returns a fulfilled Promise whose fulfillment value is 10.
+		The .then() callback runs as a microtask, and receives 10 (not the Promise object).
+
+	B. Resolve with another fulfilled Promise
+	-----------------------------------------
+		Promise.resolve(Promise.resolve(20)).then(console.log);
+		// Output: 20
+
+		Promise.resolve adopts the inner Promise's eventual outcome. The final fulfillment
+		value is 20, not a nested Promise object.
+
+	C. Resolve with a rejected Promise
+	----------------------------------
+		Promise.resolve(Promise.reject("Error")).catch(console.log);
+		// Output: Error
+
+		The resulting Promise adopts the inner Promise's rejection.
+
+2. Promise.reject()
+
+	A. Reject with a string
+	-----------------------
+		Promise.reject("Something went wrong").catch(console.log);
+		// Output: Something went wrong
+
+	B. Reject with a Promise object as the reason
+	----------------------------------------------
+		Promise.reject(Promise.resolve(10)).catch(reason => console.log(reason));
+		// The rejection reason is the Promise object itself, not automatically the value 10.
+
+	Key distinction:
+	- Promise.resolve(p) adopts p's outcome.
+	- Promise.reject(p) rejects with p as the rejection reason.
+
+3. Promise.all()
+
+	A. One input rejects
+	--------------------
+		Promise.all([
+		    Promise.resolve(1),
+		    Promise.reject("Error"),
+		    Promise.resolve(3)
+		]).catch(console.log);
+		// Output: Error
+
+		Promise.all rejects when an input rejects. It does not cancel the other operations.
+		The other operations may continue running.
+
+	B. Empty array
+	--------------
+		Promise.all([]).then(console.log);
+		// Output: []
+
+		An empty input fulfills with an empty array.
+
+	C. Ordinary values instead of Promises
+	--------------------------------------
+		Promise.all([1, 2, 3]).then(console.log);
+		// Output: [1, 2, 3]
+
+		Ordinary values are accepted and appear in the result array.
+
+	D. Results preserve input order
+	-------------------------------
+		Promise.all([
+		    new Promise(resolve => setTimeout(() => resolve("first"), 100)),
+		    Promise.resolve("second")
+		]).then(console.log);
+		// Output: ["first", "second"]
+
+		The result array follows input order, not completion order.
+
+4. Promise.allSettled()
+
+	A. Mixed fulfilled and rejected inputs
+	--------------------------------------
+		Promise.allSettled([
+		    Promise.resolve(1),
+		    Promise.reject("Error")
+		]).then(console.log);
+
+		// Result:
+		// [
+		//   { status: "fulfilled", value: 1 },
+		//   { status: "rejected", reason: "Error" }
+		// ]
+
+		It waits for every input to settle and reports each outcome.
+
+	B. Empty array
+	--------------
+		Promise.allSettled([]).then(console.log);
+		// Output: []
+
+	C. Results preserve input order
+	-------------------------------
+		Results are in the same order as the input array, regardless of which input settles first.
+
+5. Promise.race()
+
+	A. First input rejects
+	----------------------
+		Promise.race([
+		    Promise.reject("Error"),
+		    Promise.resolve(10)
+		]).catch(console.log);
+		// Output: Error
+
+		When already-settled inputs are passed in this order, the first input's reaction wins.
+		In general, the first input to settle wins, whether it fulfills or rejects.
+
+	B. Empty array
+	--------------
+		const p = Promise.race([]);
+		console.log(p);
+		// Typically displays a pending Promise in Node.js.
+
+		Promise.race([]) remains pending forever because there are no inputs.
+
+	C. First to settle wins, not first in the array
+	-----------------------------------------------
+		A later input can win if it settles before earlier inputs.
+
+6. Promise.any()
+
+	A. First input rejects, another fulfills
+	----------------------------------------
+		Promise.any([
+		    Promise.reject("Error"),
+		    Promise.resolve(20)
+		]).then(console.log);
+		// Output: 20
+
+		Promise.any ignores rejections while waiting for a fulfillment.
+
+	B. Every input rejects
+	---------------------
+		Promise.any([
+		    Promise.reject("A"),
+		    Promise.reject("B")
+		]).catch(error => {
+		    console.log(error instanceof AggregateError); // true
+		    console.log(error.errors); // ["A", "B"]
+		});
+
+		If all inputs reject, Promise.any rejects with an AggregateError.
+
+	C. Empty array
+	--------------
+		Promise.any([]).catch(error => {
+		    console.log(error instanceof AggregateError); // true
+		});
+
+		An empty input rejects with an AggregateError because no input can fulfill.
+
+7. .then(), .catch(), and .finally()
+
+	A. A .then() callback throws
+	----------------------------
+		Promise.resolve(10)
+		    .then(() => {
+			throw new Error("Oops");
+		    })
+		    .catch(error => console.log(error.message));
+		// Output: Oops
+
+		An exception thrown in a .then() callback rejects the new Promise returned by .then().
+
+	B. A .catch() handler returns a value
+	-------------------------------------
+		Promise.reject("Error")
+		    .catch(() => 100)
+		    .then(console.log);
+		// Output: 100
+
+		Returning a normal value from .catch() recovers the chain; the next Promise fulfills
+		with that value.
+
+	C. .finally() normally preserves the result
+	-------------------------------------------
+		Promise.resolve(10)
+		    .finally(() => console.log("Done"))
+		    .then(console.log);
+
+		// Output:
+		// Done
+		// 10
+
+		.finally() normally passes through the original fulfillment value or rejection reason.
+		If its callback throws or returns a rejected Promise, the resulting chain is rejected.
+
+	D. A .then() callback returns nothing
+	-------------------------------------
+		Promise.resolve(10)
+		    .then(() => {})
+		    .then(console.log);
+		// Output: undefined
+
+		If a .then() callback returns no value, the Promise it returns fulfills with undefined,
+		unless the callback throws or returns a rejected Promise.
+
+	E. A .then() callback returns a Promise
+	---------------------------------------
+		Promise.resolve(1)
+		    .then(() => Promise.resolve(50))
+		    .then(console.log);
+		// Output: 50
+
+		The Promise returned by .then() adopts the returned Promise's outcome.
+
+8. new Promise() constructor edge cases
+
+	A. Neither resolve nor reject is called
+	---------------------------------------
+		const p = new Promise(() => {});
+		console.log(p);
+		// Pending Promise
+
+		The Promise remains pending indefinitely.
+
+	B. Calling resolve/reject more than once
+	----------------------------------------
+		const p = new Promise((resolve, reject) => {
+		    resolve(10);
+		    resolve(20);
+		    reject("Error");
+		});
+
+		p.then(console.log);
+		// Output: 10
+
+		Only the first effective resolution attempt determines the outcome.
+		Later calls cannot change it.
+
+	C. Throwing inside the executor
+	-------------------------------
+		const p = new Promise(() => {
+		    throw new Error("Failed");
+		});
+
+		p.catch(error => console.log(error.message));
+		// Output: Failed
+
+		A synchronous exception thrown by the executor rejects the Promise.
+
+	D. The executor runs synchronously
+	----------------------------------
+		console.log("A");
+
+		new Promise(resolve => {
+		    console.log("B");
+		    resolve(10);
+		});
+
+		console.log("C");
+
+		// Output:
+		// A
+		// B
+		// C
+
+		The executor runs immediately. Promise handlers such as .then() run asynchronously
+		as microtasks.
+
+	E. The executor's return value is ignored
+	-----------------------------------------
+		const p = new Promise(() => {
+		    return 10;
+		});
+
+		console.log(p);
+		// Pending Promise
+
+		Returning a value from the executor does not fulfill the Promise. Call resolve(value)
+		to fulfill it.
+
+9. Async functions and await
+
+	A. An async function with no return
+	-----------------------------------
+		async function f1() {}
+
+		f1().then(console.log);
+		// Output: undefined
+
+		An async function always returns a Promise. Normal completion without a return value
+		fulfills that Promise with undefined.
+
+	B. An async function with return
+	--------------------------------
+		async function f2() {
+		    return 10;
+		}
+
+		f2().then(console.log);
+		// Output: 10
+
+		The returned Promise fulfills with 10.
+
+	C. Await suspends the async function
+	------------------------------------
+		async function f1() {
+		    await Promise.resolve();
+		}
+
+		console.log(f1());
+		// In Node.js, this can display Promise { <pending> }.
+
+		f1().then(console.log);
+		// Output: undefined
+
+		At the first await, the async function suspends and its Promise can still be pending.
+		The continuation runs as a microtask; when the function finishes normally, the Promise
+		fulfills with undefined.
+
+	D. Await a Promise at the call site
+	-----------------------------------
+		async function f1() {
+		    await Promise.resolve();
+		}
+
+		async function main() {
+		    console.log(await f1());
+		}
+
+		main();
+		// Output: undefined
+		
+		main() starts executing.
+
+
+
+	f1() is called.
+
+	f1() reaches await and suspends.
+
+	main() receives the pending Promise from f1().
+
+	main() reaches await f1() and suspends.
+
+	f1() resumes through a microtask and completes.
+
+	main()'s continuation is scheduled as a microtask.
+
+	main() resumes and executes console.log(undefined).
+
+	await f1() waits for f1's Promise and evaluates to its fulfillment value.
+		
+	extras:
+		
+		async function f2() {
+		    console.log("f2 start");
+
+		    await Promise.resolve();
+
+		    console.log("f2 done");
+		}
+
+		async function f1() {
+		    console.log("f1 start");
+
+		    await f2();
+
+		    console.log("f1 done");
+		}
+
+		f1();
+
+		console.log("outside");
+		
+	o/p: 	f1 start
+		f2 start
+		outside
+		f2 done
+		f1 done
+
+	await Promise unwrap the promise and give me the result
+	
+10. Settled, fulfilled, rejected, resolved
+
+	- Pending: the Promise's outcome has not yet been determined.
+	- Fulfilled: it settled successfully with a value.
+	- Rejected: it settled unsuccessfully with a rejection reason.
+	- Settled: fulfilled or rejected.
+	- Resolved: its outcome has been locked in, either directly or by adopting another
+	  Promise/thenable. A resolved Promise can still be pending while adopting a pending
+	  Promise.
+	- Completed: informal wording, not a formal Promise state.
+
+11. Empty-input summary
+
+	- Promise.all([])        -> fulfills with []
+	- Promise.allSettled([]) -> fulfills with []
+	- Promise.race([])       -> remains pending
+	- Promise.any([])        -> rejects with AggregateError
+
+12. Key interview reminders
+
+	- Promise.resolve(p) adopts p's outcome; Promise.reject(p) uses p as the rejection reason.
+	- .then() returns a new Promise.
+	- A .then() callback's return value determines the new Promise's outcome.
+	- Throwing inside .then() rejects the Promise returned by .then().
+	- .catch() can recover a rejected chain by returning a normal value.
+	- .finally() normally preserves the original result.
+	- Promise.all() does not cancel other operations after one input rejects.
+	- Promise.allSettled() reports every input's outcome.
+	- Promise.race() selects the first settlement.
+	- Promise.any() selects the first fulfillment.
+	- The Promise constructor's executor runs synchronously; .then() handlers run as microtasks.
+
+
+
+Async await
+
+
+1. Basic example
+
+	async function f1() {
+	    return 10;
+	}
+
+	console.log(f1());
+
+	In Node.js, you may see:
+	Promise { 10 }
+
+	What happens?
+
+	    f1() executes.
+
+	    The function returns 10.
+
+	    JavaScript returns a Promise fulfilled with 10.
+
+	    console.log() logs the Promise object.
+
+	To access the value:
+
+		async function f1() {
+		    return 10;
+		}
+
+		f1().then(result => console.log(result));
+
+		// Output: 10
+
+		Here, result receives 10, not the Promise object.
+		
+2. What if an async function returns nothing?
+
+	async function f1() {
+	}
+
+	console.log(f1());
+
+	The function completes normally without returning a value, so its Promise fulfills with undefined.
+
+	f1().then(result => console.log(result));
+
+	// Output: undefined
+
+	This is similar in outcome to Promise.resolve(undefined).
+
+3. What happens when you use await?
+
+	async function f1() {
+	    console.log("A");
+
+	    await Promise.resolve(10);
+
+	    console.log("B");
+	}
+
+	console.log("C");
+	f1();
+	console.log("D");
+
+	Output:
+	C
+	A
+	D
+	B
+	1
+
+	console.log("C") runs.
+	2
+
+	f1() starts and prints A.
+	3
+
+	await suspends f1(); its continuation is scheduled as a microtask.
+	4
+	
+	The synchronous code prints D.
+	5
+
+	The microtask resumes f1() and prints B.
+
+	Important: await doesn't block the entire JavaScript thread. It suspends the current async function while other synchronous code can continue.
+	
+4. Important async edge cases
+	Edge case 1: Returning a Promise
+
+	async function f1() {
+	    return Promise.resolve(20);
+	}
+
+	f1().then(console.log);
+
+	// Output: 20
+
+	The Promise returned by f1() adopts the outcome of Promise.resolve(20). You don't get a nested Promise as the final result.
+	Edge case 2: Throwing an error
+
+	async function f1() {
+	    throw new Error("Failed");
+	}
+
+	f1().catch(error => console.log(error.message));
+
+	// Output: Failed
+
+	Rule: An error thrown inside an async function causes its returned Promise to reject.
+	Edge case 3: Awaiting a rejected Promise
+
+	async function f1() {
+	    await Promise.reject("Error");
+	}
+
+	f1().catch(console.log);
+
+	// Output: Error
+
+	When the awaited Promise rejects, await throws that rejection reason inside the async function. If you don't handle it with try...catch, the async function's returned Promise rejects.
+	Edge case 4: Catching an awaited error
+
+	async function f1() {
+	    try {
+		await Promise.reject("Error");
+	    } catch (error) {
+		console.log(error);
+	    }
+
+	    return 10;
+	}
+
+	f1().then(console.log);
+
+	// Output:
+	// Error
+	// 10
+
+	The catch handles the error, so the function continues and returns 10. Its Promise fulfills with 10.
+	
+Edge case 5: Awaiting a normal value
+
+	async function f1() {
+	    const result = await 20;
+	    console.log(result);
+	}
+
+	f1();
+
+	// Output: 20
+
+	await accepts values that aren't Promises, too. It treats 20 like an already-fulfilled value, but the async function still suspends and resumes through a microtask.
+	
+Edge case 6: An async function without await
+
+	async function f1() {
+	    console.log("A");
+	    return 10;
+	}
+
+	console.log("B");
+
+	f1().then(console.log);
+
+	console.log("C");
+
+	Output:
+	B
+	A
+	C
+	10
+
+	The function executes synchronously until it finishes because there is no await. However, the .then() callback still runs as a microtask.
+	
+Edge case 7: Awaiting a pending Promise
+
+	async function f1() {
+	    await new Promise(() => {});
+
+	    console.log("Finished");
+	}
+
+	console.log(f1());
+
+	The Promise passed to await never settles. Therefore:
+
+	    f1() suspends indefinitely.
+
+	    "Finished" is never printed.
+
+	    The Promise returned by f1() remains pending.
+	  
+	   Reason: Promise inside it never be complete it will never be completed
+
+Edge case 8: return await versus return
+
+	async function f1() {
+	    return await Promise.resolve(10);
+	}
+
+		This fulfills with 10.
+
+	async function f2() {
+	    return Promise.resolve(10);
+	}
+
+		This also fulfills with 10.
+
+	For these simple examples, both produce the same final value. But return await can matter when using try...catch, because it allows a rejection to be thrown inside the function's try block and caught there.
+	
+5. Quick revision
+
+	Code or behavior
+		
+
+	Result
+
+	async function f() {}
+		
+
+	Promise fulfilled with undefined
+
+	return 10
+		
+
+	Promise fulfilled with 10
+
+	return Promise.resolve(10)
+		
+
+	Adopts the Promise's outcome
+
+	throw Error()
+		
+
+	Promise rejected
+
+	await 10
+		
+
+	Resumes with value 10 after suspension
+
+	await Promise.reject("X")
+		
+
+	Throws "X" inside the async function
+
+	await a permanently pending Promise
+		
+
+	Function remains suspended
+
+	Code before first await
+		
+
+	Runs synchronously
+
+	Code after await
+		
+
+	Resumes asynchronously through a microtask
+
+	The most important concept: async guarantees that a function call returns a Promise. await controls where that function suspends and resumes; it doesn't make CPU-intensive synchronous code run in the 
+	background.
+
+

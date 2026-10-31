@@ -150,6 +150,9 @@ Edge cases:
 		}
 		// Output: 0, 1, 2
 		
+	var is function-scoped or global scope, while let is block-scoped. A for loop using let gets a new per-iteration lexical binding, but this does not mean a new function execution context is created for 
+	every iteration.
+	
 7. Asynchronous Edge Cases
 	Example:
 		console.log('Start');
@@ -870,19 +873,103 @@ Closures:
 		🔹 Used for data hiding & optimization
 
 
+// Example 1: Self-comparison
+	NaN === NaN; // false
+	NaN == NaN;  // false
 
-fetch() initiates an HTTP request and resolves once response headers are received, returning a Response object whose body is a stream; res.json() asynchronously consumes that stream, parses it as JSON, and returns a Promise.
+// Example 2: Its actual type
+	typeof NaN;  // "number"
+	
+// Example 3: isNaN() vs Number.isNaN()
+	isNaN("hello");        // true (coerces "hello" -> NaN first, then checks)
+	Number.isNaN("hello"); // false (checks if the value is strictly NaN without coercion)
 
+Object.is : Object.is() does not look inside objects to compare their internal values; it evaluates primitives by value and non-primitive objects strictly by reference (memory address
+
+	0 === -0;            // true
+	Object.is(0, -0);    // false
+	Object.is(NaN, NaN); // true
+
+// Example 1: Using objects as keys
+	const a = {};
+	const b = { key: "b" };
+	const c = { key: "c" };
+
+	a[b] = 123;
+	a[c] = 456;
+
+	console.log(a[b]); // 456
+
+	    Explanation: Both b and c convert to the string "[object Object]" when used as keys. So a["[object Object]"] is set to 123, and then overwritten with 456. Use a Map if you need actual object references
+	    as keys. fetch() initiates an HTTP request and resolves once response headers are received, returning a Response object whose body is a stream; res.json() asynchronously consumes that stream, parses it
+	    as JSON, and returns a Promise.
+
+// Exception Handling: The try...finally Return Override
+
+	Adding to your #13 (Exception Handling): A return statement inside a finally block silently overrides any return or throw from the try or catch blocks.
+	JavaScript
+
+	function testFinally() {
+	  try {
+	    return 1;
+	  } catch (e) {
+	    return 2;
+	  } finally {
+	    return 3; // Overrides the 'return 1'
+	  }
+	}
+	console.log(testFinally()); // 3
+
+// Example 1: Default .sort() is lexicographical (alphabetical)
+	const nums = [10, 5, 2, 1];
+	nums.sort(); 
+	console.log(nums); // [1, 10, 2, 5] (converts numbers to strings first!)
+// Fix: nums.sort((a, b) => a - b);
+
+// Example 2: The classic .map(parseInt) trap
+	["1", "2", "3"].map(parseInt); // [1, NaN, NaN]
+	Explanation for .map(parseInt): .map() passes 3 arguments to its callback: (element, index, array). parseInt(string, radix) takes 2 arguments. So it executes:parseInt("1", 0) $\rightarrow$ 1 (radix 0
+	defaults to base 10)parseInt("2", 1) $\rightarrow$ NaN (base 1 is invalid)parseInt("3", 2) $\rightarrow$ NaN (3 is not a valid binary digit in base 2)
+
+
+// Destructuring Default Values (undefined vs null)
+
+	Adding to your Array Destructuring section: Default values in destructuring or function parameters only trigger when the value is strictly undefined.
+	JavaScript
+
+	const [a = 10, b = 20, c = 30] = [undefined, null, false];
+
+	console.log(a); // 10 (default triggered because value is undefined)
+	console.log(b); // null (null is considered an explicit value!)
+	console.log(c); // false
+	
+// Array.prototype.reduce() Edge Cases
+
+	Adding to your Reduce section:
+	JavaScript
+
+	// Example 1: Empty array WITHOUT initial value
+	[].reduce((acc, curr) => acc + curr); 
+	// ❌ TypeError: Reduce of empty array with no initial value
+
+	// Example 2: Single-element array WITHOUT initial value
+	[42].reduce((acc, curr) => {
+	  console.log("Callback ran!");
+	  return acc + curr;
+	});
+	// Output: 42 (The callback NEVER runs; 42 is returned directly)
+
+    Explanation: Always pass an initial value (like 0 or {}) as the second argument to .reduce() to prevent crashes on empty arrays.
 
 Array Destructuring:
 
-const [fName ,lName] = ["Rohan", "Kumar"]
+	const [fName ,lName] = ["Rohan", "Kumar"]
 
-console.log(fName,lName)  Rohan Kumar
+	console.log(fName,lName)  Rohan Kumar
 
-Rest Parameter:
+	Rest Parameter:
 
-The rest parameter allows a function to accept any number of arguments as an array.
+	The rest parameter allows a function to accept any number of arguments as an array.
 	
 	1. 	function sum(...numbers) {
 		    let total = 0;

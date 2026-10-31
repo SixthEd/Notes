@@ -2,8 +2,7 @@ JavaScript Execution Context
 
 When we load a script or invoke a function a new execution Context is created and pushed onto the callStack (stack)
 
-What is execution context define the environment in which code is executed it contains many internal component that engines uses to keep track of the execution flow of the piece of 
-code
+What is execution context define the environment in which code is executed it contains many internal component that engines uses to keep track of the execution flow of that piece of code
 execution context uses environmental records to keep track and maintain the identifier bindings that have been created for the variable declarations and function declaration all the
 values within that context.
 
@@ -27,6 +26,7 @@ Global object which contains several types of properties
 
 Global environment record: It manages the identifier bindings within the context these values are accessible through entire script 
 Global environment record contains another global objects it reference to global object so this is used by variable with var keywords function declarations on the globle scope.
+It also contain value of the this keyword which in case of global environment record is global this value and in most cases this just points to the global object and finally it also has an outer environment that points to null.
 
 
 
@@ -46,5 +46,7 @@ Hoisting is the process that occurs during the creation phase of an execution co
 The Temporal Dead Zone (TDZ) is the period between the creation of a let, const, or class binding and the execution of its declaration that initializes the binding.
 or
 TDZ is the period between the creation of a lexical binding and its initialization during code execution. During this period, accessing the binding throws a ReferenceError.
+or
+The TDZ is the period between entering a scope/block and the initialization of a let, const, or class binding. During this period, the binding exists but cannot be accessed; attempting to access it results in a ReferenceError.
 
 Source: https://www.youtube.com/watch?v=zdGfo6I1yrA

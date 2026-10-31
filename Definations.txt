@@ -60,6 +60,8 @@ Hoisting is the process that occurs during the creation phase of an execution co
 
 Temporal Dead Zone:
 The Temporal Dead Zone (TDZ) is the period between the creation of a let, const, or class binding and the execution of its declaration that initializes the binding.
+	or
+The TDZ is the period between entering a scope/block and the initialization of a let, const, or class binding. During this period, the binding exists but cannot be accessed; attempting to access it results in a ReferenceError.
 
 CallBack functions:
 function which is passed to another function as a argument
@@ -91,6 +93,16 @@ It is set of rules on how computer systems or programs can communicate each othe
 HTTP (HyperText Transfer Protocol) is an application-layer protocol that defines:
 How a client (browser/app) requests data and how a server responds.
 It is the language of communication between frontend and backend.
+
+Javascript
+
+Promises
+A Promise is an object that represents the eventual completion or failure of an operation and its resulting value. It is commonly used with asynchronous operations, but it can also represent the result of synchronous operations.
+
+
+
+
+
 
 
 Node js
